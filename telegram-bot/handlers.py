@@ -196,11 +196,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             await _do_voice_preview(context, chat_id, PRESET_VOICES[new_idx], idx=new_idx)
         return
 
-    if text == "🔄 ស្ដាប់ម្ដងទៀត":
-        idx = context.user_data.get("vp_current_idx", 0)
-        await _do_voice_preview(context, chat_id, PRESET_VOICES[idx], idx=idx)
-        return
-
     if text == "✏️ ប្រើសំឡេងនេះ":
         idx = context.user_data.get("vp_current_idx", 0)
         voice = PRESET_VOICES[idx]

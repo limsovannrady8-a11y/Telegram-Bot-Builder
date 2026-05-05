@@ -48,6 +48,6 @@ def voice_preview_reply_keyboard(idx: int) -> ReplyKeyboardMarkup:
         nav_row.append("▶️")
     if nav_row:
         rows.append(nav_row)
-    rows.append(["✏️ ប្រើសំឡេងនេះ", "🔄 ស្ដាប់ម្ដងទៀត"])
+    rows.append(["✏️ ប្រើសំឡេងនេះ"])
     rows.append([BTN_CANCEL])
     return ReplyKeyboardMarkup(rows, resize_keyboard=True, is_persistent=True)
