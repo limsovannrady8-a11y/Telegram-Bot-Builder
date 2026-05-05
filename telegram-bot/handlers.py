@@ -167,7 +167,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             (
                 "🎙️ *ម៉ូដ ក្លូនសំឡេង*\n\n"
                 "ផ្ញើ *voice message* ឬ *audio file* ជាឯកសារយោង \\(3–30 វិនាទីល្អបំផុត\\)\\.\n\n"
-                "📎 ផ្ញើ *audio* យោងរបស់អ្នក:"
+                "👉 _ផ្ញើសំឡេងដែលអ្នកចងក្លូន:_"
             ),
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=cancel_reply_keyboard(),
