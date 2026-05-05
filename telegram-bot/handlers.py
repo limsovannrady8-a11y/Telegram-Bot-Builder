@@ -405,7 +405,7 @@ async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -
     await _safe_delete(context, chat_id, processing.message_id)
     await _send_audio_result(
         context, chat_id, result,
-        caption="🔊 *VoxCPM2 TTS*",
+        caption=None,
     )
 
 
