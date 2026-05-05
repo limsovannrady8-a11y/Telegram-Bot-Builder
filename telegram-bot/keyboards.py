@@ -1,49 +1,35 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 from constants import SUPPORTED_LANGUAGES, PRESET_VOICES, VOICES_PER_PAGE
 
 LANGS_PER_PAGE = 6
 
+BTN_TTS  = "🗣️ អត្ថបទ → សំឡេង"
+BTN_VD   = "🎨 រចនាសំឡេង"
+BTN_VC   = "🎙️ ក្លូនសំឡេង"
+BTN_VP   = "🎭 មើលសំឡេង"
+BTN_LANG = "🌍 ភាសា"
+BTN_HELP = "❓ ជំនួយ"
+BTN_CANCEL = "❌ បោះបង់"
 
-def main_menu_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([
+
+def main_menu_reply_keyboard() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
         [
-            InlineKeyboardButton("🗣️ អត្ថបទ → សំឡេង", callback_data="tts"),
-            InlineKeyboardButton("🎨 រចនាសំឡេង", callback_data="vd"),
+            [BTN_TTS,  BTN_VD],
+            [BTN_VC,   BTN_VP],
+            [BTN_LANG, BTN_HELP],
         ],
-        [
-            InlineKeyboardButton("🎙️ ក្លូនសំឡេង", callback_data="vc"),
-            InlineKeyboardButton("🎭 មើលសំឡេង", callback_data="vp_0"),
-        ],
-        [
-            InlineKeyboardButton("🌍 ភាសា", callback_data="langs_0"),
-            InlineKeyboardButton("❓ ជំនួយ", callback_data="help"),
-        ],
-    ])
+        resize_keyboard=True,
+        is_persistent=True,
+    )
 
 
-def cancel_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([
-        [InlineKeyboardButton("❌ បោះបង់", callback_data="cancel")],
-    ])
-
-
-def back_menu_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton("❌ បោះបង់", callback_data="cancel"),
-            InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu"),
-        ],
-    ])
-
-
-def after_generate_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton("🔄 បង្កើតម្ដងទៀត", callback_data="tts"),
-            InlineKeyboardButton("🎭 មើលសំឡេង", callback_data="vp_0"),
-        ],
-        [InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu")],
-    ])
+def cancel_reply_keyboard() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
+        [[BTN_CANCEL]],
+        resize_keyboard=True,
+        is_persistent=True,
+    )
 
 
 def after_voice_preview_keyboard(voice_id: str, idx: int = 0) -> InlineKeyboardMarkup:
@@ -71,13 +57,12 @@ def after_voice_preview_keyboard(voice_id: str, idx: int = 0) -> InlineKeyboardM
 
 
 def use_voice_done_keyboard(voice_id: str = "", page: int = 0) -> InlineKeyboardMarkup:
-    regen_data = f"vp_use_{voice_id}" if voice_id else "tts"
+    regen_data = f"vp_use_{voice_id}" if voice_id else "vp_0"
     return InlineKeyboardMarkup([
         [
             InlineKeyboardButton("🔄 អត្ថបទថ្មី — សំឡេងដូចគ្នា", callback_data=regen_data),
             InlineKeyboardButton("🎭 សំឡេងបន្ថែម", callback_data=f"vp_{page}"),
         ],
-        [InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu")],
     ])
 
 
