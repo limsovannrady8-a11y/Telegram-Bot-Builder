@@ -1,7 +1,7 @@
 from telegram import ReplyKeyboardMarkup
 from constants import PRESET_VOICES
 
-BTN_TTS    = "🗣️ អត្ថបទ → សំឡេង"
+BTN_TTS    = "📝 អត្ថបទ → សំឡេង"
 BTN_VD     = "🎨 រចនាសំឡេង"
 BTN_VC     = "🎙️ ក្លូនសំឡេង"
 BTN_VP     = "🎭 មើលសំឡេង"

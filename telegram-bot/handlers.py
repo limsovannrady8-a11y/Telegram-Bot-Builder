@@ -43,7 +43,7 @@ ABOUT_TEXT = (
 
 HELP_TEXT = (
     "❓ *របៀបប្រើ VoxCPM Bot:*\n\n"
-    "*🗣️ អត្ថបទ → សំឡេង \\(TTS\\)*\n"
+    "*📝 អត្ថបទ → សំឡេង \\(TTS\\)*\n"
     "ផ្ញើអត្ថបទណាមួយ — ទទួលបានសំឡេង voice message ។ គាំទ្រ ៣០ ភាសា \\(auto\\-detected\\)\\!\n\n"
     "*🎭 មើលសំឡេង*\n"
     "ស្ដាប់គំរូ 12 ប្រភេទសំឡេង \\(អ្នករំទឹប, កុមារ, ចាស់ទុំ, Robot…\\)\\. "
@@ -118,7 +118,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         )
         return
 
-    if text == "🗣️ អត្ថបទ → សំឡេង":
+    if text == "📝 អត្ថបទ → សំឡេង":
         _clear(context)
         _set_state(context, STATE_TTS_AWAITING_TEXT)
         await msg.reply_text(
