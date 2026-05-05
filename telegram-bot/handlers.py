@@ -1,6 +1,7 @@
+import io
 import logging
 import httpx
-from telegram import Update, Message
+from telegram import Update, InputFile
 from telegram.ext import ContextTypes
 from telegram.constants import ParseMode
 
@@ -387,17 +388,25 @@ async def _send_audio_result(
 
     audio_url = result["audio_url"]
     try:
-        await context.bot.send_audio(
+        # Download audio bytes from Gradio server
+        async with httpx.AsyncClient(timeout=30) as client:
+            dl = await client.get(audio_url)
+            dl.raise_for_status()
+            audio_bytes = dl.content
+
+        voice_file = InputFile(io.BytesIO(audio_bytes), filename="speech.ogg")
+        await context.bot.send_voice(
             chat_id,
-            audio=audio_url,
+            voice=voice_file,
             caption=caption,
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=after_generate_keyboard(),
         )
-    except Exception:
+    except Exception as exc:
+        logger.error("Failed to send voice: %s", exc)
         await context.bot.send_message(
             chat_id,
-            f"🔊 Audio generated\\!\n\n[Download Audio]({_esc(audio_url)})",
+            "❌ Could not deliver voice message\\. Please try again\\.",
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=after_generate_keyboard(),
         )
