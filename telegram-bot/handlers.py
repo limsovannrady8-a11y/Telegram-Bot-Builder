@@ -167,7 +167,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             (
                 "🎙️ *ម៉ូដ ក្លូនសំឡេង*\n\n"
                 "ផ្ញើ *voice message* ឬ *audio file* ជាឯកសារយោង \\(3–30 វិនាទីល្អបំផុត\\)\\.\n\n"
-                "VoxCPM2 នឹងក្លូនសំឡេង ហើយនិយាយអត្ថបទណាមួយ ក្នុងស្ទីលនោះ\\.\n\n"
                 "📎 ផ្ញើ *audio* យោងរបស់អ្នក:"
             ),
             parse_mode=ParseMode.MARKDOWN_V2,
