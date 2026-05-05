@@ -208,10 +208,10 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         return
 
     # ── ReplyKeyboard menu button routing ────────────────────────────────────
-    if text == "❌ បោះបង់":
+    if text == "⬅️":
         _clear(context)
         await msg.reply_text(
-            "✅ បោះបង់រួចហើយ\\. ត្រឡប់ទៅម៉ឺនុយចម្បង:",
+            WELCOME_TEXT,
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=main_menu_reply_keyboard(),
         )

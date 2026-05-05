@@ -7,7 +7,7 @@ BTN_TTS  = "🗣️ អត្ថបទ → សំឡេង"
 BTN_VD   = "🎨 រចនាសំឡេង"
 BTN_VC   = "🎙️ ក្លូនសំឡេង"
 BTN_VP   = "🎭 មើលសំឡេង"
-BTN_CANCEL = "❌ បោះបង់"
+BTN_CANCEL = "⬅️"
 
 
 def main_menu_reply_keyboard() -> ReplyKeyboardMarkup:
