@@ -82,10 +82,11 @@ def after_voice_preview_keyboard(voice_id: str, page: int = 0) -> InlineKeyboard
     ])
 
 
-def use_voice_done_keyboard(page: int = 0) -> InlineKeyboardMarkup:
+def use_voice_done_keyboard(voice_id: str = "", page: int = 0) -> InlineKeyboardMarkup:
+    regen_data = f"vp_use_{voice_id}" if voice_id else "tts"
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("🔄 បង្កើតម្ដងទៀត", callback_data="tts"),
+            InlineKeyboardButton("🔄 អត្ថបទថ្មី — សំឡេងដូចគ្នា", callback_data=regen_data),
             InlineKeyboardButton("🎭 សំឡេងបន្ថែម", callback_data=f"vp_{page}"),
         ],
         [InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu")],

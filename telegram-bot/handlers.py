@@ -312,10 +312,11 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             await msg.reply_text("⚠️ សូមផ្ញើអត្ថបទ\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
             return
         instruction = context.user_data.get("instruction", "")
+        voice_id = context.user_data.get("vp_voice_id", "")
         _clear(context)
         await _do_voice_design(
             context, chat_id, msg.text, instruction,
-            done_keyboard=use_voice_done_keyboard(),
+            done_keyboard=use_voice_done_keyboard(voice_id=voice_id),
         )
         return
 
