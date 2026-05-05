@@ -221,13 +221,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         await msg.reply_text(
             (
                 "🗣️ *ម៉ូដ អត្ថបទ → សំឡេង*\n\n"
-                "ផ្ញើអត្ថបទណាមួយ ហើយខ្ញុំនឹងបំប្លែងជា voice message\\.\n\n"
-                "💡 គាំទ្រ *៣០ ភាសា* — ភាសាត្រូវបានរកឃើញដោយស្វ័យប្រវត្តិ\\!\n\n"
-                "ឧទាហរណ៍:\n"
-                "• _\"Hello, how are you today?\"_ \\(អង់គ្លេស\\)\n"
-                "• _\"សួស្ដី\\! តើអ្នកសុខសប្បាយទេ?\"_ \\(ខ្មែរ\\)\n"
-                "• _\"こんにちは、元気ですか？\"_ \\(ជប៉ុន\\)\n\n"
-                "ផ្ញើអត្ថបទ:"
+                "ផ្ញើអត្ថបទណាមួយ ហើយខ្ញុំនឹងបំប្លែងជា voice message\\."
             ),
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=cancel_reply_keyboard(),
