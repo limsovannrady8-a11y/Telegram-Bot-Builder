@@ -28,12 +28,7 @@ from voxcpm_api import generate_speech
 
 logger = logging.getLogger(__name__)
 
-WELCOME_TEXT = (
-    "🎙️ *សូមស្វាគមន៍មកកាន់ VoxCPM Bot\\!*\n\n"
-    "ដំណើរការដោយ *VoxCPM2* — AI Text\\-to\\-Speech "
-    "ដែលគាំទ្រ *៣០ ភាសា* រួមមាន ភាសាខ្មែរ 🇰🇭\n\n"
-    "ជ្រើសរើសសកម្មភាព:"
-)
+WELCOME_TEXT = "🎙️ *សូមស្វាគមន៍មកកាន់ Khmer Text To Voice*"
 
 ABOUT_TEXT = (
     "🧠 *VoxCPM2 — AI TTS កម្រិតខ្ពស់*\n\n"
