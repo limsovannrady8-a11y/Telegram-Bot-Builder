@@ -117,6 +117,62 @@ PRESET_VOICES = [
         "instruction": "A robotic, synthetic AI voice. Flat, monotone, precise. Speaks without emotion, perfectly measured pace.",
         "sample": "ជម្រាបសួរអ្នកទាំងអស់គ្នា សូមស្វាគមន៍មកកាន់ លឹម សុវណ្ណរ៉ាឌី Bot",
     },
+    {
+        "id": "meditation",
+        "emoji": "🧘",
+        "name": "សមាធិស្ងប់",
+        "instruction": "A deeply meditative, zen voice. Extremely slow and deliberate. Speaks with long, calming pauses between phrases, like a mindfulness guide. Breath-like rhythm, hushed and serene.",
+        "sample": "ជម្រាបសួរអ្នកទាំងអស់គ្នា សូមស្វាគមន៍មកកាន់ លឹម សុវណ្ណរ៉ាឌី Bot",
+    },
+    {
+        "id": "fitness_coach",
+        "emoji": "💪",
+        "name": "គ្រូហាត់ប្រាណ",
+        "instruction": "An intense fitness coach. Loud, powerful, commanding. Short punchy sentences like gym instructions. Highly motivated and energetic, pushing the listener to go harder. Assertive and bold.",
+        "sample": "ជម្រាបសួរអ្នកទាំងអស់គ្នា សូមស្វាគមន៍មកកាន់ លឹម សុវណ្ណរ៉ាឌី Bot",
+    },
+    {
+        "id": "teacher",
+        "emoji": "📖",
+        "name": "គ្រូបង្រៀន",
+        "instruction": "A kind, patient school teacher. Clear, measured pace with friendly warmth. Explains things simply and carefully, enunciating every word. Encouraging and nurturing tone.",
+        "sample": "ជម្រាបសួរអ្នកទាំងអស់គ្នា សូមស្វាគមន៍មកកាន់ លឹម សុវណ្ណរ៉ាឌី Bot",
+    },
+    {
+        "id": "motivational",
+        "emoji": "🏆",
+        "name": "ជំរុញចិត្ត",
+        "instruction": "A powerful motivational speaker. Passionate, intense, deeply inspiring. Builds momentum with rising energy, bold conviction, and emotional urgency. Speaks as if addressing thousands — every word matters.",
+        "sample": "ជម្រាបសួរអ្នកទាំងអស់គ្នា សូមស្វាគមន៍មកកាន់ លឹម សុវណ្ណរ៉ាឌី Bot",
+    },
+    {
+        "id": "sad_emotional",
+        "emoji": "😢",
+        "name": "ក្ដីសោក",
+        "instruction": "A deeply emotional, sorrowful voice. Slow, heavy, tender. Speaks as if holding back tears, with quiet fragility and genuine grief. Each word carries weight and sadness.",
+        "sample": "ជម្រាបសួរអ្នកទាំងអស់គ្នា សូមស្វាគមន៍មកកាន់ លឹម សុវណ្ណរ៉ាឌី Bot",
+    },
+    {
+        "id": "epic_hero",
+        "emoji": "🦸",
+        "name": "វីរបុរស",
+        "instruction": "An epic cinematic hero voice. Deep, bold, and legendary. Speaks with gravitas and purpose, like a warrior delivering a battle speech. Powerful resonance, dramatic pauses, commanding presence.",
+        "sample": "ជម្រាបសួរអ្នកទាំងអស់គ្នា សូមស្វាគមន៍មកកាន់ លឹម សុវណ្ណរ៉ាឌី Bot",
+    },
+    {
+        "id": "asmr_whisper",
+        "emoji": "🤫",
+        "name": "សំឡេងស្រួល ASMR",
+        "instruction": "An ultra-soft ASMR whispering voice. Barely above a whisper, intimate and close. Extremely slow and gentle, every syllable soft and breathy. Creates a tingly, relaxing sensation.",
+        "sample": "ជម្រាបសួរអ្នកទាំងអស់គ្នា សូមស្វាគមន៍មកកាន់ លឹម សុវណ្ណរ៉ាឌី Bot",
+    },
+    {
+        "id": "elegant",
+        "emoji": "🌸",
+        "name": "ភាពអភិជន",
+        "instruction": "An elegant, refined, and sophisticated voice. Speaks with graceful poise and polished diction. Formal yet warm, like high-society aristocracy — every word carefully chosen and beautifully delivered.",
+        "sample": "ជម្រាបសួរអ្នកទាំងអស់គ្នា សូមស្វាគមន៍មកកាន់ លឹម សុវណ្ណរ៉ាឌី Bot",
+    },
 ]
 
 HF_SPACE_URL = "https://huggingface.co/spaces/OpenBMB/VoxCPM-Demo"
