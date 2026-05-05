@@ -32,39 +32,39 @@ from voxcpm_api import generate_speech
 logger = logging.getLogger(__name__)
 
 WELCOME_TEXT = (
-    "🎙️ *Welcome to VoxCPM Bot\\!*\n\n"
-    "Powered by *VoxCPM2* — a tokenizer\\-free Text\\-to\\-Speech AI "
-    "supporting *30 languages* including Khmer 🇰🇭\n\n"
-    "Choose what you'd like to do:"
+    "🎙️ *សូមស្វាគមន៍មកកាន់ VoxCPM Bot\\!*\n\n"
+    "ដំណើរការដោយ *VoxCPM2* — AI Text\\-to\\-Speech "
+    "ដែលគាំទ្រ *៣០ ភាសា* រួមមាន ភាសាខ្មែរ 🇰🇭\n\n"
+    "ជ្រើសរើសសកម្មភាព:"
 )
 
 ABOUT_TEXT = (
-    "🧠 *VoxCPM2 — Advanced TTS AI*\n\n"
-    "VoxCPM2 is a 2B parameter model trained on over *2 million hours* of multilingual speech data\\.\n\n"
-    "✨ *Features:*\n"
-    "• 🌍 30 languages \\(including Khmer, Thai, Lao, Vietnamese…\\)\n"
-    "• 🎨 Voice Design — create a voice from text description\n"
-    "• 🎭 Voice Preview — browse & hear 12 preset voice styles\n"
-    "• 🎛️ Controllable Cloning — clone any voice\n"
-    "• 🎙️ Ultimate Cloning — reproduce every vocal nuance\n"
-    "• 🔊 48kHz studio\\-quality audio\n\n"
-    "📜 Open\\-source under *Apache 2\\.0* license"
+    "🧠 *VoxCPM2 — AI TTS កម្រិតខ្ពស់*\n\n"
+    "VoxCPM2 គឺជាម៉ូដែលដែលមាន 2B parameters "
+    "ហើយត្រូវបានបណ្តុះបណ្តាលលើទិន្នន័យសំឡេងច្រើនជាង *2 លានម៉ោង*\\.\n\n"
+    "✨ *មុខងារ:*\n"
+    "• 🌍 ៣០ ភាសា \\(រួមមាន ខ្មែរ, ថៃ, ឡាវ, វៀតណាម…\\)\n"
+    "• 🎨 រចនាសំឡេង — បង្កើតសំឡេងតាមការពិពណ៌នា\n"
+    "• 🎭 មើលសំឡេង — ស្ដាប់គំរូ 12 ប្រភេទសំឡេង\n"
+    "• 🎛️ ក្លូនដែលអាចគ្រប់គ្រងបាន — ក្លូនសំឡេងណាមួយ\n"
+    "• 🔊 សំឡេងគុណភាព studio 48kHz\n\n"
+    "📜 Open\\-source ក្រោម *Apache 2\\.0*"
 )
 
 HELP_TEXT = (
-    "❓ *How to use VoxCPM Bot:*\n\n"
-    "*🗣️ Text\\-to\\-Speech \\(TTS\\)*\n"
-    "Send any text — get speech back as a voice message\\. 30 languages auto\\-detected\\!\n\n"
-    "*🎭 Voice Preview*\n"
-    "Browse 12 preset voices \\(Narrator, Child, Elder, Robot…\\)\\. "
-    "Tap any voice to hear a sample, then use it with your own text\\.\n\n"
-    "*🎨 Voice Design*\n"
-    "Describe a custom voice \\(age, gender, emotion, tone\\), then send text to speak\\.\n\n"
-    "*🎙️ Voice Clone*\n"
-    "Send a reference audio clip, then send text to speak in that cloned voice\\.\n\n"
-    "*🌍 Languages*\n"
-    "Browse all 30 supported languages\\.\n\n"
-    "💡 *Tip:* VoxCPM2 auto\\-detects language — no tag needed\\!"
+    "❓ *របៀបប្រើ VoxCPM Bot:*\n\n"
+    "*🗣️ អត្ថបទ → សំឡេង \\(TTS\\)*\n"
+    "ផ្ញើអត្ថបទណាមួយ — ទទួលបានសំឡេង voice message ។ គាំទ្រ ៣០ ភាសា \\(auto\\-detected\\)\\!\n\n"
+    "*🎭 មើលសំឡេង*\n"
+    "ស្ដាប់គំរូ 12 ប្រភេទសំឡេង \\(អ្នករំទឹប, កុមារ, ចាស់ទុំ, Robot…\\)\\. "
+    "ចុចលើសំឡេងដើម្បីស្ដាប់ ហើយប្រើជាមួយអត្ថបទខ្លួនឯង\\.\n\n"
+    "*🎨 រចនាសំឡេង*\n"
+    "ពិពណ៌នាសំឡេងដែលចង់បាន \\(អាយុ, ភេទ, អារម្មណ៍, សំណេរ\\) ហើយផ្ញើអត្ថបទ\\.\n\n"
+    "*🎙️ ក្លូនសំឡេង*\n"
+    "ផ្ញើ audio យោង ហើយផ្ញើអត្ថបទ ដើម្បីបង្កើតសំឡេងដូច\\.\n\n"
+    "*🌍 ភាសា*\n"
+    "ស្វែងរក ៣០ ភាសាដែលគាំទ្រ\\.\n\n"
+    "💡 *គន្លឹះ:* VoxCPM2 រកភាសាដោយស្វ័យប្រវត្តិ — មិនចាំបាច់ tag\\!"
 )
 
 
@@ -103,7 +103,7 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     if data == "cancel":
         _clear(context)
         await context.bot.send_message(
-            chat_id, "✅ Cancelled\\. Back to main menu:",
+            chat_id, "✅ បោះបង់រួចហើយ\\. ត្រឡប់ទៅម៉ឺនុយចម្បង:",
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=main_menu_keyboard(),
         )
@@ -116,14 +116,14 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await context.bot.send_message(
             chat_id,
             (
-                "🗣️ *Text\\-to\\-Speech Mode*\n\n"
-                "Send me any text and I'll convert it to a voice message\\.\n\n"
-                "💡 Supports *30 languages* — language is auto\\-detected\\!\n\n"
-                "Examples:\n"
-                "• _\"Hello, how are you today?\"_ \\(English\\)\n"
-                "• _\"សួស្ដី\\! តើអ្នកសុខសប្បាយទេ?\"_ \\(Khmer\\)\n"
-                "• _\"こんにちは、元気ですか？\"_ \\(Japanese\\)\n\n"
-                "Send your text now:"
+                "🗣️ *ម៉ូដ អត្ថបទ → សំឡេង*\n\n"
+                "ផ្ញើអត្ថបទណាមួយ ហើយខ្ញុំនឹងបំប្លែងជា voice message\\.\n\n"
+                "💡 គាំទ្រ *៣០ ភាសា* — ភាសាត្រូវបានរកឃើញដោយស្វ័យប្រវត្តិ\\!\n\n"
+                "ឧទាហរណ៍:\n"
+                "• _\"Hello, how are you today?\"_ \\(អង់គ្លេស\\)\n"
+                "• _\"សួស្ដី\\! តើអ្នកសុខសប្បាយទេ?\"_ \\(ខ្មែរ\\)\n"
+                "• _\"こんにちは、元気ですか？\"_ \\(ជប៉ុន\\)\n\n"
+                "ផ្ញើអត្ថបទ:"
             ),
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=cancel_keyboard(),
@@ -137,13 +137,13 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await context.bot.send_message(
             chat_id,
             (
-                "🎨 *Voice Design Mode*\n\n"
-                "Describe the voice you want to create\\. Be creative\\!\n\n"
-                "💡 *Examples:*\n"
-                "• _\"A young woman with a soft, warm voice\\. Speaks slowly and gently\\.\"_\n"
-                "• _\"An elderly man with a deep, wise voice\\. Speaks thoughtfully\\.\"_\n"
-                "• _\"An energetic teenager, fast\\-paced and enthusiastic\\.\"_\n\n"
-                "Send your *voice description* now:"
+                "🎨 *ម៉ូដ រចនាសំឡេង*\n\n"
+                "ពិពណ៌នាអំពីសំឡេងដែលចង់បង្កើត\\. សូមបង្ហាញគំនិត\\!\n\n"
+                "💡 *ឧទាហរណ៍:*\n"
+                "• _\"ស្ត្រីក្មេង សំឡេងទន់ ។ និយាយយឺតៗ ស្ងប់ស្ងាត់\\.\"_\n"
+                "• _\"បុរសចាស់ ប្រាជ្ញ ។ និយាយច្បាស់ ហ៊ានហ៊ឺន\\.\"_\n"
+                "• _\"យុវវ័យ ថាមពលខ្លាំង ។ ប្រញាប់ ស្រស់ស្រាយ\\.\"_\n\n"
+                "ផ្ញើ *ការពិពណ៌នា* របស់អ្នក:"
             ),
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=cancel_keyboard(),
@@ -157,10 +157,10 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await context.bot.send_message(
             chat_id,
             (
-                "🎙️ *Voice Clone Mode*\n\n"
-                "Send a *voice message* or *audio file* as reference \\(3–30 seconds recommended\\)\\.\n\n"
-                "VoxCPM2 will clone the voice and speak any text in that style\\.\n\n"
-                "📎 Send your *reference audio* now:"
+                "🎙️ *ម៉ូដ ក្លូនសំឡេង*\n\n"
+                "ផ្ញើ *voice message* ឬ *audio file* ជាឯកសារយោង \\(3–30 វិនាទីល្អបំផុត\\)\\.\n\n"
+                "VoxCPM2 នឹងក្លូនសំឡេង ហើយនិយាយអត្ថបទណាមួយ ក្នុងស្ទីលនោះ\\.\n\n"
+                "📎 ផ្ញើ *audio* យោងរបស់អ្នក:"
             ),
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=cancel_keyboard(),
@@ -174,10 +174,10 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await context.bot.send_message(
             chat_id,
             (
-                f"🎭 *Voice Preview Gallery*\n\n"
-                f"Browse {total} preset voice styles\\. "
-                f"Tap any voice to hear a sample, then use it with your own text\\.\n\n"
-                f"_Page {page + 1} of {(total - 1) // 6 + 1}_"
+                f"🎭 *បណ្ណាល័យ មើលសំឡេង*\n\n"
+                f"ស្វែងរក {total} ប្រភេទសំឡេង\\. "
+                f"ចុចលើសំឡេងណាមួយដើម្បីស្ដាប់គំរូ\\.\n\n"
+                f"_ទំព័រ {page + 1} នៃ {(total - 1) // 6 + 1}_"
             ),
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=voice_preview_list_keyboard(page),
@@ -189,7 +189,7 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         voice_id = data[len("vp_listen_"):]
         voice = _find_voice(voice_id)
         if not voice:
-            await context.bot.send_message(chat_id, "❌ Voice not found\\.", parse_mode=ParseMode.MARKDOWN_V2)
+            await context.bot.send_message(chat_id, "❌ រកមិនឃើញសំឡេង\\.", parse_mode=ParseMode.MARKDOWN_V2)
             return
         await _do_voice_preview(context, chat_id, voice)
         return
@@ -199,7 +199,7 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         voice_id = data[len("vp_use_"):]
         voice = _find_voice(voice_id)
         if not voice:
-            await context.bot.send_message(chat_id, "❌ Voice not found\\.", parse_mode=ParseMode.MARKDOWN_V2)
+            await context.bot.send_message(chat_id, "❌ រកមិនឃើញសំឡេង\\.", parse_mode=ParseMode.MARKDOWN_V2)
             return
         _clear(context)
         context.user_data["instruction"] = voice["instruction"]
@@ -208,9 +208,9 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await context.bot.send_message(
             chat_id,
             (
-                f"{voice['emoji']} *{_esc(voice['name'])} — Custom Text*\n\n"
-                f"Voice style: _{_esc(voice['instruction'][:120])}_\n\n"
-                f"Now send the *text you want spoken* in this voice:"
+                f"{voice['emoji']} *{_esc(voice['name'])} — អត្ថបទផ្ទាល់ខ្លួន*\n\n"
+                f"ស្ទីលសំឡេង: _{_esc(voice['instruction'][:120])}_\n\n"
+                f"ឥឡូវផ្ញើ *អត្ថបទ* ដែលចង់និយាយ:"
             ),
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=cancel_keyboard(),
@@ -222,7 +222,7 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         page = int(data.split("_")[1])
         await context.bot.send_message(
             chat_id,
-            "🌍 *Supported Languages \\(30\\)*\n\nVoxCPM2 automatically detects and synthesizes speech in all these languages:",
+            "🌍 *ភាសាដែលគាំទ្រ \\(៣០\\)*\n\nVoxCPM2 រកភាសាដោយស្វ័យប្រវត្តិ សម្រាប់ទាំងអស់ខាងក្រោម:",
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=languages_keyboard(page),
         )
@@ -235,7 +235,7 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             name = lang["name"]
             await context.bot.send_message(
                 chat_id,
-                f"✅ *{_esc(name)}* is supported\\!\n\nJust type text in that language and use *Text\\-to\\-Speech* — VoxCPM2 will auto\\-detect it\\!",
+                f"✅ *{_esc(name)}* គាំទ្រហើយ\\!\n\nវាយអត្ថបទជាភាសានោះ ហើយប្រើ *អត្ថបទ → សំឡេង* — VoxCPM2 នឹងរកភាសាដោយស្វ័យប្រវត្តិ\\!",
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=back_menu_keyboard(),
             )
@@ -278,7 +278,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     if state == STATE_TTS_AWAITING_TEXT:
         if not msg.text:
-            await msg.reply_text("⚠️ Please send a text message\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
+            await msg.reply_text("⚠️ សូមផ្ញើអត្ថបទ\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
             return
         _clear(context)
         await _do_tts(context, chat_id, msg.text)
@@ -286,13 +286,13 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     if state == STATE_VD_AWAITING_INSTRUCTION:
         if not msg.text:
-            await msg.reply_text("⚠️ Please send a text description\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
+            await msg.reply_text("⚠️ សូមផ្ញើអត្ថបទពិពណ៌នា\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
             return
         context.user_data["instruction"] = msg.text
         _set_state(context, STATE_VD_AWAITING_TEXT)
         short = msg.text[:80] + ("…" if len(msg.text) > 80 else "")
         await msg.reply_text(
-            f"✅ Voice description saved\\!\n\n_\"{_esc(short)}\"_\n\nNow send the *text you want spoken* in this voice:",
+            f"✅ ការពិពណ៌នាបានរក្សាទុក\\!\n\n_\"{_esc(short)}\"_\n\nឥឡូវផ្ញើ *អត្ថបទ* ដែលចង់និយាយ:",
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=cancel_keyboard(),
         )
@@ -300,7 +300,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     if state == STATE_VD_AWAITING_TEXT:
         if not msg.text:
-            await msg.reply_text("⚠️ Please send a text message\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
+            await msg.reply_text("⚠️ សូមផ្ញើអត្ថបទ\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
             return
         instruction = context.user_data.get("instruction", "")
         _clear(context)
@@ -309,10 +309,9 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     if state == STATE_VP_AWAITING_TEXT:
         if not msg.text:
-            await msg.reply_text("⚠️ Please send a text message\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
+            await msg.reply_text("⚠️ សូមផ្ញើអត្ថបទ\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
             return
         instruction = context.user_data.get("instruction", "")
-        voice_id = context.user_data.get("vp_voice_id", "")
         _clear(context)
         await _do_voice_design(
             context, chat_id, msg.text, instruction,
@@ -331,7 +330,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
         if not file_id:
             await msg.reply_text(
-                "⚠️ Please send a *voice message* or *audio file* as your reference\\.",
+                "⚠️ សូមផ្ញើ *voice message* ឬ *audio file* ជាឯកសារយោង\\.",
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=cancel_keyboard(),
             )
@@ -352,18 +351,18 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             )
             _set_state(context, STATE_VC_AWAITING_TEXT)
             await msg.reply_text(
-                f"✅ Reference audio received \\({len(audio_bytes) // 1024} KB\\)\\!\n\nNow send the *text you want spoken* in that voice:",
+                f"✅ Audio យោងទទួលបានហើយ \\({len(audio_bytes) // 1024} KB\\)\\!\n\nឥឡូវផ្ញើ *អត្ថបទ* ដែលចង់និយាយ:",
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=cancel_keyboard(),
             )
         except Exception as exc:
             logger.error("Failed to download reference audio: %s", exc)
-            await msg.reply_text("❌ Could not process the audio\\. Please try again\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
+            await msg.reply_text("❌ មិនអាចដំណើរការ audio បាន\\. សូមព្យាយាមម្ដងទៀត\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
         return
 
     if state == STATE_VC_AWAITING_TEXT:
         if not msg.text:
-            await msg.reply_text("⚠️ Please send a text message\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
+            await msg.reply_text("⚠️ សូមផ្ញើអត្ថបទ\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
             return
         ref_bytes = context.user_data.get("ref_audio_bytes", b"")
         ref_name = context.user_data.get("ref_audio_name", "ref.ogg")
@@ -375,7 +374,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 # ── Helpers ────────────────────────────────────────────────────────────────
 
 def _esc(text: str) -> str:
-    """Escape special MarkdownV2 characters."""
     special = r"\_*[]()~`>#+-=|{}.!"
     return "".join(f"\\{c}" if c in special else c for c in text)
 
@@ -384,7 +382,7 @@ async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -
     short = text[:120] + ("…" if len(text) > 120 else "")
     processing = await context.bot.send_message(
         chat_id,
-        f"⏳ Generating speech…\n\n_{_esc(short)}_",
+        f"⏳ កំពុងបង្កើតសំឡេង…\n\n_{_esc(short)}_",
         parse_mode=ParseMode.MARKDOWN_V2,
     )
     result = await generate_speech(text=text)
@@ -406,12 +404,12 @@ async def _do_voice_design(
     short_t = text[:80] + ("…" if len(text) > 80 else "")
     processing = await context.bot.send_message(
         chat_id,
-        f"⏳ *Creating custom voice…*\n\n🎨 _{_esc(short_i)}_\n📝 _{_esc(short_t)}_",
+        f"⏳ *កំពុងបង្កើតសំឡេង…*\n\n🎨 _{_esc(short_i)}_\n📝 _{_esc(short_t)}_",
         parse_mode=ParseMode.MARKDOWN_V2,
     )
     result = await generate_speech(text=text, instruction=instruction)
     await _safe_delete(context, chat_id, processing.message_id)
-    caption = f"🎨 *Voice Generated\\!*\n\n🎭 _{_esc(instruction[:100])}_\n📝 _{_esc(text[:100])}_"
+    caption = f"🎨 *សំឡេងបានបង្កើត\\!*\n\n🎭 _{_esc(instruction[:100])}_\n📝 _{_esc(text[:100])}_"
     await _send_audio_result(context, chat_id, result, caption=caption, keyboard=done_keyboard)
 
 
@@ -425,12 +423,12 @@ async def _do_voice_clone(
     short_t = text[:80] + ("…" if len(text) > 80 else "")
     processing = await context.bot.send_message(
         chat_id,
-        f"⏳ *Cloning voice…*\n\n📝 _{_esc(short_t)}_\n\nUploading reference audio and generating…",
+        f"⏳ *កំពុងក្លូនសំឡេង…*\n\n📝 _{_esc(short_t)}_\n\nកំពុង upload audio យោង…",
         parse_mode=ParseMode.MARKDOWN_V2,
     )
     result = await generate_speech(text=text, reference_audio_bytes=ref_bytes, reference_audio_filename=ref_name)
     await _safe_delete(context, chat_id, processing.message_id)
-    caption = f"🎙️ *Voice Clone*\n\n📝 _{_esc(text[:150])}_"
+    caption = f"🎙️ *ក្លូនសំឡេង*\n\n📝 _{_esc(text[:150])}_"
     await _send_audio_result(context, chat_id, result, caption=caption)
 
 
@@ -439,10 +437,9 @@ async def _do_voice_preview(
     chat_id: int,
     voice: dict,
 ) -> None:
-    """Generate a preview sample for a preset voice."""
     processing = await context.bot.send_message(
         chat_id,
-        f"⏳ Generating preview for *{_esc(voice['name'])}*…\n\n_{_esc(voice['instruction'][:100])}_",
+        f"⏳ កំពុងបង្កើតគំរូ *{_esc(voice['name'])}*…\n\n_{_esc(voice['instruction'][:100])}_",
         parse_mode=ParseMode.MARKDOWN_V2,
     )
     result = await generate_speech(text=voice["sample"], instruction=voice["instruction"])
@@ -452,7 +449,7 @@ async def _do_voice_preview(
         err_detail = _esc(str(result.get("error", "Unknown"))[:160])
         await context.bot.send_message(
             chat_id,
-            f"❌ *Preview failed*\n\n_{err_detail}_",
+            f"❌ *បង្កើតគំរូបានបរាជ័យ*\n\n_{err_detail}_",
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=after_voice_preview_keyboard(voice["id"]),
         )
@@ -481,7 +478,7 @@ async def _do_voice_preview(
         logger.error("Failed to send preview voice: %s", exc)
         await context.bot.send_message(
             chat_id,
-            "❌ Could not deliver preview\\. Please try again\\.",
+            "❌ មិនអាចផ្ញើ voice message បាន\\. សូមព្យាយាមម្ដងទៀត\\.",
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=after_voice_preview_keyboard(voice["id"]),
         )
@@ -500,9 +497,9 @@ async def _send_audio_result(
         await context.bot.send_message(
             chat_id,
             (
-                "❌ *Generation failed*\n\n"
+                "❌ *ការបង្កើតបានបរាជ័យ*\n\n"
                 f"_{err_detail}_\n\n"
-                "Try the live demo: [HuggingFace Space](https://huggingface\\.co/spaces/OpenBMB/VoxCPM\\-Demo)"
+                "សូមសាកល្បង demo ផ្ទាល់: [HuggingFace Space](https://huggingface\\.co/spaces/OpenBMB/VoxCPM\\-Demo)"
             ),
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=kb,
@@ -529,7 +526,7 @@ async def _send_audio_result(
         logger.error("Failed to send voice: %s", exc)
         await context.bot.send_message(
             chat_id,
-            "❌ Could not deliver voice message\\. Please try again\\.",
+            "❌ មិនអាចផ្ញើ voice message បាន\\. សូមព្យាយាមម្ដងទៀត\\.",
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=kb,
         )

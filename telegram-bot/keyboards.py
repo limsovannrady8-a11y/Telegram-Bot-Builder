@@ -7,34 +7,34 @@ LANGS_PER_PAGE = 6
 def main_menu_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("🗣️ Text-to-Speech", callback_data="tts"),
-            InlineKeyboardButton("🎨 Voice Design", callback_data="vd"),
+            InlineKeyboardButton("🗣️ អត្ថបទ → សំឡេង", callback_data="tts"),
+            InlineKeyboardButton("🎨 រចនាសំឡេង", callback_data="vd"),
         ],
         [
-            InlineKeyboardButton("🎙️ Voice Clone", callback_data="vc"),
-            InlineKeyboardButton("🎭 Voice Preview", callback_data="vp_0"),
+            InlineKeyboardButton("🎙️ ក្លូនសំឡេង", callback_data="vc"),
+            InlineKeyboardButton("🎭 មើលសំឡេង", callback_data="vp_0"),
         ],
         [
-            InlineKeyboardButton("🌍 Languages", callback_data="langs_0"),
-            InlineKeyboardButton("ℹ️ About VoxCPM", callback_data="about"),
+            InlineKeyboardButton("🌍 ភាសា", callback_data="langs_0"),
+            InlineKeyboardButton("ℹ️ អំពី VoxCPM", callback_data="about"),
         ],
         [
-            InlineKeyboardButton("❓ Help", callback_data="help"),
+            InlineKeyboardButton("❓ ជំនួយ", callback_data="help"),
         ],
     ])
 
 
 def cancel_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("❌ Cancel", callback_data="cancel")],
+        [InlineKeyboardButton("❌ បោះបង់", callback_data="cancel")],
     ])
 
 
 def back_menu_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("❌ Cancel", callback_data="cancel"),
-            InlineKeyboardButton("🏠 Main Menu", callback_data="menu"),
+            InlineKeyboardButton("❌ បោះបង់", callback_data="cancel"),
+            InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu"),
         ],
     ])
 
@@ -42,10 +42,10 @@ def back_menu_keyboard() -> InlineKeyboardMarkup:
 def after_generate_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("🔄 Generate Another", callback_data="tts"),
-            InlineKeyboardButton("🎭 Voice Preview", callback_data="vp_0"),
+            InlineKeyboardButton("🔄 បង្កើតម្ដងទៀត", callback_data="tts"),
+            InlineKeyboardButton("🎭 មើលសំឡេង", callback_data="vp_0"),
         ],
-        [InlineKeyboardButton("🏠 Main Menu", callback_data="menu")],
+        [InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu")],
     ])
 
 
@@ -64,34 +64,34 @@ def voice_preview_list_keyboard(page: int = 0) -> InlineKeyboardMarkup:
 
     nav_row = []
     if page > 0:
-        nav_row.append(InlineKeyboardButton("◀️ Prev", callback_data=f"vp_{page - 1}"))
+        nav_row.append(InlineKeyboardButton("◀️ មុន", callback_data=f"vp_{page - 1}"))
     if start + VOICES_PER_PAGE < len(PRESET_VOICES):
-        nav_row.append(InlineKeyboardButton("Next ▶️", callback_data=f"vp_{page + 1}"))
+        nav_row.append(InlineKeyboardButton("បន្ទាប់ ▶️", callback_data=f"vp_{page + 1}"))
     if nav_row:
         rows.append(nav_row)
 
-    rows.append([InlineKeyboardButton("🏠 Main Menu", callback_data="menu")])
+    rows.append([InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu")])
     return InlineKeyboardMarkup(rows)
 
 
 def after_voice_preview_keyboard(voice_id: str, page: int = 0) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("✏️ Use This Voice", callback_data=f"vp_use_{voice_id}"),
-            InlineKeyboardButton("🔄 Preview Again", callback_data=f"vp_listen_{voice_id}"),
+            InlineKeyboardButton("✏️ ប្រើសំឡេងនេះ", callback_data=f"vp_use_{voice_id}"),
+            InlineKeyboardButton("🔄 ស្ដាប់ម្ដងទៀត", callback_data=f"vp_listen_{voice_id}"),
         ],
-        [InlineKeyboardButton("◀️ Back to Voices", callback_data=f"vp_{page}")],
-        [InlineKeyboardButton("🏠 Main Menu", callback_data="menu")],
+        [InlineKeyboardButton("◀️ ត្រឡប់ទៅបញ្ជីសំឡេង", callback_data=f"vp_{page}")],
+        [InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu")],
     ])
 
 
 def use_voice_done_keyboard(page: int = 0) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("🔄 Generate Another", callback_data="tts"),
-            InlineKeyboardButton("🎭 More Voices", callback_data=f"vp_{page}"),
+            InlineKeyboardButton("🔄 បង្កើតម្ដងទៀត", callback_data="tts"),
+            InlineKeyboardButton("🎭 សំឡេងបន្ថែម", callback_data=f"vp_{page}"),
         ],
-        [InlineKeyboardButton("🏠 Main Menu", callback_data="menu")],
+        [InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu")],
     ])
 
 
@@ -108,13 +108,13 @@ def languages_keyboard(page: int = 0) -> InlineKeyboardMarkup:
 
     nav_row = []
     if page > 0:
-        nav_row.append(InlineKeyboardButton("◀️ Prev", callback_data=f"langs_{page - 1}"))
+        nav_row.append(InlineKeyboardButton("◀️ មុន", callback_data=f"langs_{page - 1}"))
     if start + LANGS_PER_PAGE < len(SUPPORTED_LANGUAGES):
-        nav_row.append(InlineKeyboardButton("Next ▶️", callback_data=f"langs_{page + 1}"))
+        nav_row.append(InlineKeyboardButton("បន្ទាប់ ▶️", callback_data=f"langs_{page + 1}"))
     if nav_row:
         rows.append(nav_row)
 
-    rows.append([InlineKeyboardButton("🏠 Main Menu", callback_data="menu")])
+    rows.append([InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu")])
     return InlineKeyboardMarkup(rows)
 
 
@@ -125,5 +125,5 @@ def about_keyboard() -> InlineKeyboardMarkup:
             InlineKeyboardButton("📦 GitHub Repo", url="https://github.com/OpenBMB/VoxCPM"),
             InlineKeyboardButton("🧠 Model Weights", url="https://huggingface.co/openbmb/VoxCPM2"),
         ],
-        [InlineKeyboardButton("🏠 Main Menu", callback_data="menu")],
+        [InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu")],
     ])
