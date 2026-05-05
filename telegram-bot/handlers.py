@@ -25,6 +25,7 @@ from constants import (
     STATE_VP_AWAITING_TEXT,
 )
 from voxcpm_api import generate_speech
+import db as voice_db
 
 logger = logging.getLogger(__name__)
 
@@ -464,9 +465,42 @@ async def _do_voice_preview(
     voice: dict,
     idx: int = 0,
 ) -> None:
+    voice_id = voice["id"]
+    total = len(PRESET_VOICES)
+    caption = (
+        f"{voice['emoji']} *{_esc(voice['name'])}* \\({idx + 1}/{total}\\)\n\n"
+        f"_{_esc(voice['instruction'][:120])}_"
+    )
+
+    # ── 1. Check in-memory cache ──────────────────────────────────────────────
+    audio_bytes: bytes | None = context.bot_data.get(f"vp_cache_{voice_id}")
+
+    # ── 2. Check DB cache ─────────────────────────────────────────────────────
+    if not audio_bytes:
+        audio_bytes = await voice_db.get_cached_voice(voice_id)
+        if audio_bytes:
+            context.bot_data[f"vp_cache_{voice_id}"] = audio_bytes
+            logger.info("Voice preview %s loaded from DB", voice_id)
+
+    # ── 3. Serve immediately if cached ────────────────────────────────────────
+    if audio_bytes:
+        try:
+            voice_file = InputFile(io.BytesIO(audio_bytes), filename="preview.ogg")
+            await context.bot.send_voice(
+                chat_id,
+                voice=voice_file,
+                caption=caption,
+                parse_mode=ParseMode.MARKDOWN_V2,
+                reply_markup=after_voice_preview_keyboard(voice_id, idx=idx),
+            )
+        except Exception as exc:
+            logger.error("Failed to send cached preview: %s", exc)
+        return
+
+    # ── 4. Fallback: generate via API ─────────────────────────────────────────
     processing = await context.bot.send_message(
         chat_id,
-        f"⏳ កំពុងបង្កើតគំរូ *{_esc(voice['name'])}*…\n\n_{_esc(voice['instruction'][:100])}_",
+        f"⏳ កំពុងបង្កើតគំរូ *{_esc(voice['name'])}*…",
         parse_mode=ParseMode.MARKDOWN_V2,
     )
     result = await generate_speech(text=voice["sample"], instruction=voice["instruction"])
@@ -478,7 +512,7 @@ async def _do_voice_preview(
             chat_id,
             f"❌ *បង្កើតគំរូបានបរាជ័យ*\n\n_{err_detail}_",
             parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=after_voice_preview_keyboard(voice["id"], idx=idx),
+            reply_markup=after_voice_preview_keyboard(voice_id, idx=idx),
         )
         return
 
@@ -488,21 +522,16 @@ async def _do_voice_preview(
             dl.raise_for_status()
             audio_bytes = dl.content
 
-        # Cache the preview audio so "Use this voice" can use it as reference
-        context.bot_data[f"vp_cache_{voice['id']}"] = audio_bytes
+        context.bot_data[f"vp_cache_{voice_id}"] = audio_bytes
+        await voice_db.save_cached_voice(voice_id, audio_bytes)
 
         voice_file = InputFile(io.BytesIO(audio_bytes), filename="preview.ogg")
-        total = len(PRESET_VOICES)
-        caption = (
-            f"{voice['emoji']} *{_esc(voice['name'])}* \\({idx + 1}/{total}\\)\n\n"
-            f"_{_esc(voice['instruction'][:120])}_"
-        )
         await context.bot.send_voice(
             chat_id,
             voice=voice_file,
             caption=caption,
             parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=after_voice_preview_keyboard(voice["id"], idx=idx),
+            reply_markup=after_voice_preview_keyboard(voice_id, idx=idx),
         )
     except Exception as exc:
         logger.error("Failed to send preview voice: %s", exc)
@@ -510,8 +539,38 @@ async def _do_voice_preview(
             chat_id,
             "❌ មិនអាចផ្ញើ voice message បាន\\. សូមព្យាយាមម្ដងទៀត\\.",
             parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=after_voice_preview_keyboard(voice["id"], idx=idx),
+            reply_markup=after_voice_preview_keyboard(voice_id, idx=idx),
         )
+
+
+async def precache_all_voices() -> None:
+    """Background task: download and cache all preset voice samples into DB."""
+    import asyncio
+    logger.info("Starting background voice pre-caching (%d voices)…", len(PRESET_VOICES))
+    cached = 0
+    for voice in PRESET_VOICES:
+        vid = voice["id"]
+        existing = await voice_db.get_cached_voice(vid)
+        if existing:
+            logger.info("Pre-cache: %s already in DB, skipping", vid)
+            cached += 1
+            continue
+        try:
+            result = await generate_speech(text=voice["sample"], instruction=voice["instruction"])
+            if result.get("error") or not result.get("audio_url"):
+                logger.warning("Pre-cache failed for %s: %s", vid, result.get("error"))
+                continue
+            async with httpx.AsyncClient(timeout=30) as client:
+                dl = await client.get(result["audio_url"])
+                dl.raise_for_status()
+                audio_bytes = dl.content
+            await voice_db.save_cached_voice(vid, audio_bytes)
+            cached += 1
+            logger.info("Pre-cache: saved %s (%d KB) [%d/%d]", vid, len(audio_bytes) // 1024, cached, len(PRESET_VOICES))
+            await asyncio.sleep(2)
+        except Exception as exc:
+            logger.warning("Pre-cache error for %s: %s", vid, exc)
+    logger.info("Voice pre-caching complete: %d/%d cached", cached, len(PRESET_VOICES))
 
 
 async def _send_audio_result(

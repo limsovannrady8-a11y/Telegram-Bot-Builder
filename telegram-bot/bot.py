@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 import sys
@@ -9,7 +10,8 @@ from telegram.ext import (
     filters,
 )
 
-from handlers import on_callback, on_message
+from db import init_db
+from handlers import on_callback, on_message, precache_all_voices
 
 logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -23,6 +25,8 @@ async def post_init(application: Application) -> None:
     await application.bot.delete_my_commands()
     me = await application.bot.get_me()
     logger.info("Bot started: @%s", me.username)
+    await init_db()
+    asyncio.create_task(precache_all_voices())
 
 
 def main() -> None:
