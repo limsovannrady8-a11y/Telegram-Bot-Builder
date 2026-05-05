@@ -12,7 +12,6 @@ from keyboards import (
     after_generate_keyboard,
     languages_keyboard,
     about_keyboard,
-    voice_preview_list_keyboard,
     after_voice_preview_keyboard,
     use_voice_done_keyboard,
 )
@@ -167,31 +166,22 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         )
         return
 
-    # ── Voice Preview — list page ─────────────────────────────────────────────
+    # ── Voice Preview — carousel: show voice at index directly ───────────────
     if data.startswith("vp_") and not data.startswith("vp_listen_") and not data.startswith("vp_use_"):
-        page = int(data.split("_")[1])
-        total = len(PRESET_VOICES)
-        await context.bot.send_message(
-            chat_id,
-            (
-                f"🎭 *បណ្ណាល័យ មើលសំឡេង*\n\n"
-                f"ស្វែងរក {total} ប្រភេទសំឡេង\\. "
-                f"ចុចលើសំឡេងណាមួយដើម្បីស្ដាប់គំរូ\\.\n\n"
-                f"_ទំព័រ {page + 1} នៃ {(total - 1) // 6 + 1}_"
-            ),
-            parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=voice_preview_list_keyboard(page),
-        )
+        idx = int(data.split("_")[1])
+        if 0 <= idx < len(PRESET_VOICES):
+            await _do_voice_preview(context, chat_id, PRESET_VOICES[idx], idx=idx)
         return
 
-    # ── Voice Preview — generate sample ──────────────────────────────────────
+    # ── Voice Preview — replay sample ────────────────────────────────────────
     if data.startswith("vp_listen_"):
         voice_id = data[len("vp_listen_"):]
         voice = _find_voice(voice_id)
         if not voice:
             await context.bot.send_message(chat_id, "❌ រកមិនឃើញសំឡេង\\.", parse_mode=ParseMode.MARKDOWN_V2)
             return
-        await _do_voice_preview(context, chat_id, voice)
+        idx = next((i for i, v in enumerate(PRESET_VOICES) if v["id"] == voice_id), 0)
+        await _do_voice_preview(context, chat_id, voice, idx=idx)
         return
 
     # ── Voice Preview — use this voice for custom text ────────────────────────
@@ -467,6 +457,7 @@ async def _do_voice_preview(
     context: ContextTypes.DEFAULT_TYPE,
     chat_id: int,
     voice: dict,
+    idx: int = 0,
 ) -> None:
     processing = await context.bot.send_message(
         chat_id,
@@ -482,7 +473,7 @@ async def _do_voice_preview(
             chat_id,
             f"❌ *បង្កើតគំរូបានបរាជ័យ*\n\n_{err_detail}_",
             parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=after_voice_preview_keyboard(voice["id"]),
+            reply_markup=after_voice_preview_keyboard(voice["id"], idx=idx),
         )
         return
 
@@ -496,17 +487,17 @@ async def _do_voice_preview(
         context.bot_data[f"vp_cache_{voice['id']}"] = audio_bytes
 
         voice_file = InputFile(io.BytesIO(audio_bytes), filename="preview.ogg")
+        total = len(PRESET_VOICES)
         caption = (
-            f"{voice['emoji']} *{_esc(voice['name'])}*\n\n"
-            f"_{_esc(voice['instruction'][:120])}_\n\n"
-            f"📝 _{_esc(voice['sample'][:120])}_"
+            f"{voice['emoji']} *{_esc(voice['name'])}* \\({idx + 1}/{total}\\)\n\n"
+            f"_{_esc(voice['instruction'][:120])}_"
         )
         await context.bot.send_voice(
             chat_id,
             voice=voice_file,
             caption=caption,
             parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=after_voice_preview_keyboard(voice["id"]),
+            reply_markup=after_voice_preview_keyboard(voice["id"], idx=idx),
         )
     except Exception as exc:
         logger.error("Failed to send preview voice: %s", exc)
@@ -514,7 +505,7 @@ async def _do_voice_preview(
             chat_id,
             "❌ មិនអាចផ្ញើ voice message បាន\\. សូមព្យាយាមម្ដងទៀត\\.",
             parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=after_voice_preview_keyboard(voice["id"]),
+            reply_markup=after_voice_preview_keyboard(voice["id"], idx=idx),
         )
 
 

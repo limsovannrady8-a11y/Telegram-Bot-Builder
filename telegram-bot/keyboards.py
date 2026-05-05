@@ -46,40 +46,28 @@ def after_generate_keyboard() -> InlineKeyboardMarkup:
     ])
 
 
-def voice_preview_list_keyboard(page: int = 0) -> InlineKeyboardMarkup:
-    start = page * VOICES_PER_PAGE
-    slice_ = PRESET_VOICES[start: start + VOICES_PER_PAGE]
-
-    rows = []
-    for v in slice_:
-        rows.append([
-            InlineKeyboardButton(
-                f"{v['emoji']} {v['name']}",
-                callback_data=f"vp_listen_{v['id']}",
-            )
-        ])
-
-    nav_row = []
-    if page > 0:
-        nav_row.append(InlineKeyboardButton("◀️ មុន", callback_data=f"vp_{page - 1}"))
-    if start + VOICES_PER_PAGE < len(PRESET_VOICES):
-        nav_row.append(InlineKeyboardButton("បន្ទាប់ ▶️", callback_data=f"vp_{page + 1}"))
-    if nav_row:
-        rows.append(nav_row)
-
-    rows.append([InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu")])
-    return InlineKeyboardMarkup(rows)
-
-
-def after_voice_preview_keyboard(voice_id: str, page: int = 0) -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([
+def after_voice_preview_keyboard(voice_id: str, idx: int = 0) -> InlineKeyboardMarkup:
+    rows = [
         [
             InlineKeyboardButton("✏️ ប្រើសំឡេងនេះ", callback_data=f"vp_use_{voice_id}"),
             InlineKeyboardButton("🔄 ស្ដាប់ម្ដងទៀត", callback_data=f"vp_listen_{voice_id}"),
         ],
-        [InlineKeyboardButton("◀️ ត្រឡប់ទៅបញ្ជីសំឡេង", callback_data=f"vp_{page}")],
-        [InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu")],
-    ])
+    ]
+    nav_row = []
+    if idx > 0:
+        prev_v = PRESET_VOICES[idx - 1]
+        nav_row.append(InlineKeyboardButton(
+            f"◀️ {prev_v['emoji']} {prev_v['name']}", callback_data=f"vp_{idx - 1}"
+        ))
+    if idx < len(PRESET_VOICES) - 1:
+        next_v = PRESET_VOICES[idx + 1]
+        nav_row.append(InlineKeyboardButton(
+            f"{next_v['emoji']} {next_v['name']} ▶️", callback_data=f"vp_{idx + 1}"
+        ))
+    if nav_row:
+        rows.append(nav_row)
+    rows.append([InlineKeyboardButton("🏠 ម៉ឺនុយចម្បង", callback_data="menu")])
+    return InlineKeyboardMarkup(rows)
 
 
 def use_voice_done_keyboard(voice_id: str = "", page: int = 0) -> InlineKeyboardMarkup:
