@@ -117,7 +117,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         _clear(context)
         if in_voice_preview:
             await msg.reply_text(
-                "🔊 *ជ្រើសរើសសំឡេង:*",
+                "សូមជ្រើសរើសសំឡេង",
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=voice_list_reply_keyboard(),
             )
@@ -176,7 +176,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     if text == "🔊 ជ្រើសរើសសំឡេង":
         await msg.reply_text(
-            "🎭 *ជ្រើសរើសសំឡេង:*",
+            "សូមជ្រើសរើសសំឡេង",
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=voice_list_reply_keyboard(),
         )
