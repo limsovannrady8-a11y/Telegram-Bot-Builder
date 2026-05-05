@@ -36,8 +36,8 @@ PRESET_VOICES = [
     {
         "id": "tiktok_energetic",
         "emoji": "🔥",
-        "name": "TikTok Energetic",
-        "instruction": "An ultra-energetic young social media content creator, fast-paced and hype. Speaks with maximum enthusiasm and excitement, like a viral TikTok video. Short punchy sentences, trending slang energy.",
+        "name": "TikTok ថាមពល",
+        "instruction": "ក្មេងៗ ថាមពលខ្លាំង ស្ទីល TikTok ។ និយាយលឿនៗ ស្រស់ស្រាយ ហ្ស្វ៉ូ ។ ប្រញាប់ ចា ទាក់ទាញ ដូចវីឌីអូ TikTok ដែលល្បីៗ ។",
         "sample": "ជម្រាបសួរអ្នកទាំងអស់គ្នា សូមស្វាគមន៍មកកាន់ លឹម សុវណ្ណរ៉ាឌី Bot",
     },
     {
