@@ -7,17 +7,14 @@ BTN_TTS  = "🗣️ អត្ថបទ → សំឡេង"
 BTN_VD   = "🎨 រចនាសំឡេង"
 BTN_VC   = "🎙️ ក្លូនសំឡេង"
 BTN_VP   = "🎭 មើលសំឡេង"
-BTN_LANG = "🌍 ភាសា"
-BTN_HELP = "❓ ជំនួយ"
 BTN_CANCEL = "❌ បោះបង់"
 
 
 def main_menu_reply_keyboard() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         [
-            [BTN_TTS,  BTN_VD],
-            [BTN_VC,   BTN_VP],
-            [BTN_LANG, BTN_HELP],
+            [BTN_TTS, BTN_VD],
+            [BTN_VC,  BTN_VP],
         ],
         resize_keyboard=True,
         is_persistent=True,

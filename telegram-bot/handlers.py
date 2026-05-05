@@ -265,22 +265,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         await _do_voice_preview(context, chat_id, PRESET_VOICES[0], idx=0)
         return
 
-    if text == "🌍 ភាសា":
-        await msg.reply_text(
-            "🌍 *ភាសាដែលគាំទ្រ \\(៣០\\)*\n\nVoxCPM2 រកភាសាដោយស្វ័យប្រវត្តិ សម្រាប់ទាំងអស់ខាងក្រោម:",
-            parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=languages_keyboard(0),
-        )
-        return
-
-    if text == "❓ ជំនួយ":
-        await msg.reply_text(
-            HELP_TEXT,
-            parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=main_menu_reply_keyboard(),
-        )
-        return
-
     # ── State-based message handling ─────────────────────────────────────────
     state = _get_state(context)
 
