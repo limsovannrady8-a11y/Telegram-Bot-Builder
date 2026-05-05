@@ -1,4 +1,5 @@
 import logging
+import httpx
 from telegram import Update, Message
 from telegram.ext import ContextTypes
 from telegram.constants import ParseMode
@@ -283,15 +284,27 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
         try:
             file = await context.bot.get_file(file_id)
-            context.user_data["ref_audio_url"] = file.file_path
+            file_url = file.file_path
+            # Download audio bytes so we can upload them to the Gradio space
+            async with httpx.AsyncClient(timeout=30) as client:
+                dl = await client.get(file_url)
+                dl.raise_for_status()
+                audio_bytes = dl.content
+
+            context.user_data["ref_audio_bytes"] = audio_bytes
+            context.user_data["ref_audio_name"] = (
+                getattr(msg.voice, "mime_type", None) and "ref.ogg"
+                or getattr(msg.audio, "file_name", None)
+                or "ref.ogg"
+            )
             _set_state(context, STATE_VC_AWAITING_TEXT)
             await msg.reply_text(
-                "✅ Reference audio received\\!\n\nNow send the *text you want spoken* in that voice:",
+                f"✅ Reference audio received \\({len(audio_bytes) // 1024} KB\\)\\!\n\nNow send the *text you want spoken* in that voice:",
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=cancel_keyboard(),
             )
         except Exception as exc:
-            logger.error("Failed to get file: %s", exc)
+            logger.error("Failed to get/download file: %s", exc)
             await msg.reply_text("❌ Could not process the audio\\. Please try again\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
         return
 
@@ -299,9 +312,10 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         if not msg.text:
             await msg.reply_text("⚠️ Please send a text message\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_keyboard())
             return
-        ref_url = context.user_data.get("ref_audio_url", "")
+        ref_bytes = context.user_data.get("ref_audio_bytes", b"")
+        ref_name = context.user_data.get("ref_audio_name", "ref.ogg")
         _clear(context)
-        await _do_voice_clone(context, chat_id, msg.text, ref_url)
+        await _do_voice_clone(context, chat_id, msg.text, ref_bytes, ref_name)
         return
 
 
@@ -337,14 +351,14 @@ async def _do_voice_design(context: ContextTypes.DEFAULT_TYPE, chat_id: int, tex
     await _send_audio_result(context, chat_id, result, caption=caption)
 
 
-async def _do_voice_clone(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str, ref_url: str) -> None:
+async def _do_voice_clone(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str, ref_bytes: bytes, ref_name: str = "ref.ogg") -> None:
     short_t = text[:80] + ("…" if len(text) > 80 else "")
     processing = await context.bot.send_message(
         chat_id,
-        f"⏳ *Cloning voice…*\n\n📝 Text: _{_esc(short_t)}_\n\nThis may take a few seconds…",
+        f"⏳ *Cloning voice…*\n\n📝 Text: _{_esc(short_t)}_\n\nUploading reference audio and generating…",
         parse_mode=ParseMode.MARKDOWN_V2,
     )
-    result = await generate_speech(text=text, reference_audio_url=ref_url)
+    result = await generate_speech(text=text, reference_audio_bytes=ref_bytes, reference_audio_filename=ref_name)
     await _safe_delete(context, chat_id, processing.message_id)
     caption = f"🎙️ *Voice Clone Generated\\!*\n\n📝 Text: _{_esc(text[:150])}_"
     await _send_audio_result(context, chat_id, result, caption=caption)
@@ -357,12 +371,13 @@ async def _send_audio_result(
     caption: str,
 ) -> None:
     if result.get("error") or not result.get("audio_url"):
+        err_detail = _esc(str(result.get("error", "Unknown error"))[:180])
         await context.bot.send_message(
             chat_id,
             (
                 "❌ *Generation failed*\n\n"
-                "The VoxCPM demo server may be busy or unavailable\\.\n\n"
-                f"Try the live demo: [HuggingFace Space](https://huggingface.co/spaces/OpenBMB/VoxCPM\\-Demo)"
+                f"_{err_detail}_\n\n"
+                "Try the live demo: [HuggingFace Space](https://huggingface\\.co/spaces/OpenBMB/VoxCPM\\-Demo)"
             ),
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=after_generate_keyboard(),
