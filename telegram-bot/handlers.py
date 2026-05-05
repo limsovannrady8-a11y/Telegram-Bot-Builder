@@ -201,9 +201,12 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         if not voice:
             await context.bot.send_message(chat_id, "❌ រកមិនឃើញសំឡេង\\.", parse_mode=ParseMode.MARKDOWN_V2)
             return
+        cached_bytes = context.bot_data.get(f"vp_cache_{voice_id}")
         _clear(context)
         context.user_data["instruction"] = voice["instruction"]
         context.user_data["vp_voice_id"] = voice_id
+        if cached_bytes:
+            context.user_data["vp_ref_bytes"] = cached_bytes
         _set_state(context, STATE_VP_AWAITING_TEXT)
         await context.bot.send_message(
             chat_id,
@@ -313,11 +316,9 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             return
         instruction = context.user_data.get("instruction", "")
         voice_id = context.user_data.get("vp_voice_id", "")
+        ref_bytes = context.user_data.get("vp_ref_bytes")
         _clear(context)
-        await _do_voice_design(
-            context, chat_id, msg.text, instruction,
-            done_keyboard=use_voice_done_keyboard(voice_id=voice_id),
-        )
+        await _do_vp_with_voice(context, chat_id, msg.text, instruction, ref_bytes, voice_id)
         return
 
     if state == STATE_VC_AWAITING_AUDIO:
@@ -414,6 +415,35 @@ async def _do_voice_design(
     await _send_audio_result(context, chat_id, result, caption=caption, keyboard=done_keyboard)
 
 
+async def _do_vp_with_voice(
+    context: ContextTypes.DEFAULT_TYPE,
+    chat_id: int,
+    text: str,
+    instruction: str,
+    ref_bytes: bytes | None,
+    voice_id: str = "",
+) -> None:
+    short_i = instruction[:60] + ("…" if len(instruction) > 60 else "")
+    short_t = text[:80] + ("…" if len(text) > 80 else "")
+    processing = await context.bot.send_message(
+        chat_id,
+        f"⏳ *កំពុងបង្កើតសំឡេង…*\n\n🎭 _{_esc(short_i)}_\n📝 _{_esc(short_t)}_",
+        parse_mode=ParseMode.MARKDOWN_V2,
+    )
+    result = await generate_speech(
+        text=text,
+        instruction=instruction,
+        reference_audio_bytes=ref_bytes,
+        reference_audio_filename="preview.ogg",
+    )
+    await _safe_delete(context, chat_id, processing.message_id)
+    caption = f"🎭 *សំឡេងបានបង្កើត\\!*\n\n_{_esc(instruction[:100])}_\n📝 _{_esc(text[:100])}_"
+    await _send_audio_result(
+        context, chat_id, result, caption=caption,
+        keyboard=use_voice_done_keyboard(voice_id=voice_id),
+    )
+
+
 async def _do_voice_clone(
     context: ContextTypes.DEFAULT_TYPE,
     chat_id: int,
@@ -461,6 +491,9 @@ async def _do_voice_preview(
             dl = await client.get(result["audio_url"])
             dl.raise_for_status()
             audio_bytes = dl.content
+
+        # Cache the preview audio so "Use this voice" can use it as reference
+        context.bot_data[f"vp_cache_{voice['id']}"] = audio_bytes
 
         voice_file = InputFile(io.BytesIO(audio_bytes), filename="preview.ogg")
         caption = (
