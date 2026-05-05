@@ -9,13 +9,9 @@ from keyboards import (
     main_menu_reply_keyboard,
     cancel_reply_keyboard,
     voice_list_reply_keyboard,
-    languages_keyboard,
-    about_keyboard,
-    after_voice_preview_keyboard,
-    use_voice_done_keyboard,
+    voice_preview_reply_keyboard,
 )
 from constants import (
-    SUPPORTED_LANGUAGES,
     PRESET_VOICES,
     STATE_IDLE,
     STATE_TTS_AWAITING_TEXT,
@@ -84,105 +80,10 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     data = query.data or ""
     chat_id = query.message.chat_id
 
-    # ── Navigation ──────────────────────────────────────────────────────────
-    if data == "menu":
+    if data in ("menu", "cancel"):
         _clear(context)
         await context.bot.send_message(
             chat_id, WELCOME_TEXT,
-            parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=main_menu_reply_keyboard(),
-        )
-        return
-
-    if data == "cancel":
-        _clear(context)
-        await context.bot.send_message(
-            chat_id, "✅ បោះបង់រួចហើយ\\. ត្រឡប់ទៅម៉ឺនុយចម្បង:",
-            parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=main_menu_reply_keyboard(),
-        )
-        return
-
-    # ── Voice Preview — carousel: show voice at index directly ───────────────
-    if data.startswith("vp_") and not data.startswith("vp_listen_") and not data.startswith("vp_use_"):
-        idx = int(data.split("_")[1])
-        if 0 <= idx < len(PRESET_VOICES):
-            await _do_voice_preview(context, chat_id, PRESET_VOICES[idx], idx=idx)
-        return
-
-    # ── Voice Preview — replay sample ────────────────────────────────────────
-    if data.startswith("vp_listen_"):
-        voice_id = data[len("vp_listen_"):]
-        voice = _find_voice(voice_id)
-        if not voice:
-            await context.bot.send_message(chat_id, "❌ រកមិនឃើញសំឡេង\\.", parse_mode=ParseMode.MARKDOWN_V2)
-            return
-        idx = next((i for i, v in enumerate(PRESET_VOICES) if v["id"] == voice_id), 0)
-        await _do_voice_preview(context, chat_id, voice, idx=idx)
-        return
-
-    # ── Voice Preview — use this voice for custom text ────────────────────────
-    if data.startswith("vp_use_"):
-        voice_id = data[len("vp_use_"):]
-        voice = _find_voice(voice_id)
-        if not voice:
-            await context.bot.send_message(chat_id, "❌ រកមិនឃើញសំឡេង\\.", parse_mode=ParseMode.MARKDOWN_V2)
-            return
-        cached_bytes = context.bot_data.get(f"vp_cache_{voice_id}")
-        _clear(context)
-        context.user_data["instruction"] = voice["instruction"]
-        context.user_data["vp_voice_id"] = voice_id
-        if cached_bytes:
-            context.user_data["vp_ref_bytes"] = cached_bytes
-        _set_state(context, STATE_VP_AWAITING_TEXT)
-        await context.bot.send_message(
-            chat_id,
-            (
-                f"{voice['emoji']} *{_esc(voice['name'])} — អត្ថបទផ្ទាល់ខ្លួន*\n\n"
-                f"ស្ទីលសំឡេង: _{_esc(voice['instruction'][:120])}_\n\n"
-                f"ឥឡូវផ្ញើ *អត្ថបទ* ដែលចង់និយាយ:"
-            ),
-            parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=cancel_reply_keyboard(),
-        )
-        return
-
-    # ── Languages ─────────────────────────────────────────────────────────────
-    if data.startswith("langs_"):
-        page = int(data.split("_")[1])
-        await context.bot.send_message(
-            chat_id,
-            "🌍 *ភាសាដែលគាំទ្រ \\(៣០\\)*\n\nVoxCPM2 រកភាសាដោយស្វ័យប្រវត្តិ សម្រាប់ទាំងអស់ខាងក្រោម:",
-            parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=languages_keyboard(page),
-        )
-        return
-
-    if data.startswith("lang_"):
-        code = data[5:]
-        lang = next((l for l in SUPPORTED_LANGUAGES if l["code"] == code), None)
-        if lang:
-            name = lang["name"]
-            await context.bot.send_message(
-                chat_id,
-                f"✅ *{_esc(name)}* គាំទ្រហើយ\\!\n\nវាយអត្ថបទជាភាសានោះ ហើយប្រើ *អត្ថបទ → សំឡេង* — VoxCPM2 នឹងរកភាសាដោយស្វ័យប្រវត្តិ\\!",
-                parse_mode=ParseMode.MARKDOWN_V2,
-                reply_markup=main_menu_reply_keyboard(),
-            )
-        return
-
-    # ── About / Help ──────────────────────────────────────────────────────────
-    if data == "about":
-        await context.bot.send_message(
-            chat_id, ABOUT_TEXT,
-            parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=about_keyboard(),
-        )
-        return
-
-    if data == "help":
-        await context.bot.send_message(
-            chat_id, HELP_TEXT,
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=main_menu_reply_keyboard(),
         )
@@ -278,6 +179,46 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if _voice_match:
         idx = PRESET_VOICES.index(_voice_match)
         await _do_voice_preview(context, chat_id, _voice_match, idx=idx)
+        return
+
+    # ── Voice preview navigation / action buttons ─────────────────────────────
+    if text == "◀️":
+        idx = context.user_data.get("vp_current_idx", 0)
+        if idx > 0:
+            new_idx = idx - 1
+            await _do_voice_preview(context, chat_id, PRESET_VOICES[new_idx], idx=new_idx)
+        return
+
+    if text == "▶️":
+        idx = context.user_data.get("vp_current_idx", 0)
+        if idx < len(PRESET_VOICES) - 1:
+            new_idx = idx + 1
+            await _do_voice_preview(context, chat_id, PRESET_VOICES[new_idx], idx=new_idx)
+        return
+
+    if text == "🔄 ស្ដាប់ម្ដងទៀត":
+        idx = context.user_data.get("vp_current_idx", 0)
+        await _do_voice_preview(context, chat_id, PRESET_VOICES[idx], idx=idx)
+        return
+
+    if text == "✏️ ប្រើសំឡេងនេះ":
+        idx = context.user_data.get("vp_current_idx", 0)
+        voice = PRESET_VOICES[idx]
+        voice_id = voice["id"]
+        cached_bytes = context.bot_data.get(f"vp_cache_{voice_id}")
+        if not cached_bytes:
+            cached_bytes = await voice_db.get_cached_voice(voice_id)
+        _clear(context)
+        context.user_data["instruction"] = voice["instruction"]
+        context.user_data["vp_voice_id"] = voice_id
+        if cached_bytes:
+            context.user_data["vp_ref_bytes"] = cached_bytes
+        _set_state(context, STATE_VP_AWAITING_TEXT)
+        await msg.reply_text(
+            f"{voice['emoji']} *{_esc(voice['name'])}*\n\nផ្ញើ *អត្ថបទ* ដែលចង់និយាយ:",
+            parse_mode=ParseMode.MARKDOWN_V2,
+            reply_markup=cancel_reply_keyboard(),
+        )
         return
 
     # ── State-based message handling ─────────────────────────────────────────
@@ -451,7 +392,7 @@ async def _do_vp_with_voice(
     await _safe_delete(context, chat_id, processing.message_id)
     await _send_audio_result(
         context, chat_id, result, caption="🎭 *សំឡេងបានបង្កើត\\!*",
-        keyboard=use_voice_done_keyboard(voice_id=voice_id),
+        keyboard=main_menu_reply_keyboard(),
     )
 
 
@@ -493,6 +434,9 @@ async def _do_voice_preview(
             context.bot_data[f"vp_cache_{voice_id}"] = audio_bytes
             logger.info("Voice preview %s loaded from DB", voice_id)
 
+    context.user_data["vp_current_idx"] = idx
+    kb = voice_preview_reply_keyboard(idx)
+
     # ── 3. Serve immediately if cached ────────────────────────────────────────
     if audio_bytes:
         try:
@@ -502,7 +446,7 @@ async def _do_voice_preview(
                 voice=voice_file,
                 caption=caption,
                 parse_mode=ParseMode.MARKDOWN_V2,
-                reply_markup=after_voice_preview_keyboard(voice_id, idx=idx),
+                reply_markup=kb,
             )
         except Exception as exc:
             logger.error("Failed to send cached preview: %s", exc)
@@ -523,7 +467,7 @@ async def _do_voice_preview(
             chat_id,
             f"❌ *បង្កើតគំរូបានបរាជ័យ*\n\n_{err_detail}_",
             parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=after_voice_preview_keyboard(voice_id, idx=idx),
+            reply_markup=kb,
         )
         return
 
@@ -542,7 +486,7 @@ async def _do_voice_preview(
             voice=voice_file,
             caption=caption,
             parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=after_voice_preview_keyboard(voice_id, idx=idx),
+            reply_markup=kb,
         )
     except Exception as exc:
         logger.error("Failed to send preview voice: %s", exc)
@@ -550,7 +494,7 @@ async def _do_voice_preview(
             chat_id,
             "❌ មិនអាចផ្ញើ voice message បាន\\. សូមព្យាយាមម្ដងទៀត\\.",
             parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=after_voice_preview_keyboard(voice_id, idx=idx),
+            reply_markup=kb,
         )
 
 
