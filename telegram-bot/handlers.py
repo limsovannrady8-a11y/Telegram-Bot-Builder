@@ -84,32 +84,6 @@ def _find_voice(voice_id: str) -> dict | None:
     return next((v for v in PRESET_VOICES if v["id"] == voice_id), None)
 
 
-async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    _clear(context)
-    await update.message.reply_text(
-        WELCOME_TEXT,
-        parse_mode=ParseMode.MARKDOWN_V2,
-        reply_markup=main_menu_keyboard(),
-    )
-
-
-async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text(
-        HELP_TEXT,
-        parse_mode=ParseMode.MARKDOWN_V2,
-        reply_markup=main_menu_keyboard(),
-    )
-
-
-async def cmd_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    _clear(context)
-    await update.message.reply_text(
-        WELCOME_TEXT,
-        parse_mode=ParseMode.MARKDOWN_V2,
-        reply_markup=main_menu_keyboard(),
-    )
-
-
 async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
@@ -293,8 +267,13 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     state = _get_state(context)
     chat_id = msg.chat_id
 
-    if state == STATE_IDLE:
-        await msg.reply_text("👋 Use the menu to get started:", reply_markup=main_menu_keyboard())
+    if state == STATE_IDLE or (msg.text and msg.text.startswith("/")):
+        _clear(context)
+        await msg.reply_text(
+            WELCOME_TEXT,
+            parse_mode=ParseMode.MARKDOWN_V2,
+            reply_markup=main_menu_keyboard(),
+        )
         return
 
     if state == STATE_TTS_AWAITING_TEXT:

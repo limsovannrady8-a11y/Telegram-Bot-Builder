@@ -2,16 +2,14 @@ import logging
 import os
 import sys
 
-from telegram import BotCommand
 from telegram.ext import (
     Application,
     CallbackQueryHandler,
-    CommandHandler,
     MessageHandler,
     filters,
 )
 
-from handlers import cmd_start, cmd_help, cmd_menu, on_callback, on_message
+from handlers import on_callback, on_message
 
 logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -22,11 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 async def post_init(application: Application) -> None:
-    await application.bot.set_my_commands([
-        BotCommand("start", "Start the bot / show main menu"),
-        BotCommand("menu", "Show main menu"),
-        BotCommand("help", "How to use VoxCPM Bot"),
-    ])
+    await application.bot.delete_my_commands()
     me = await application.bot.get_me()
     logger.info("Bot started: @%s", me.username)
 
@@ -44,13 +38,10 @@ def main() -> None:
         .build()
     )
 
-    app.add_handler(CommandHandler("start", cmd_start))
-    app.add_handler(CommandHandler("help", cmd_help))
-    app.add_handler(CommandHandler("menu", cmd_menu))
     app.add_handler(CallbackQueryHandler(on_callback))
     app.add_handler(
         MessageHandler(
-            filters.TEXT | filters.VOICE | filters.AUDIO | filters.Document.ALL,
+            filters.TEXT | filters.VOICE | filters.AUDIO | filters.Document.ALL | filters.COMMAND,
             on_message,
         )
     )
