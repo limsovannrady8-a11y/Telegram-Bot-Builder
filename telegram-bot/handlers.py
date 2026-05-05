@@ -329,6 +329,32 @@ def _esc(text: str) -> str:
     return "".join(f"\\{c}" if c in special else c for c in text)
 
 
+def _is_khmer(text: str) -> bool:
+    """Return True if the text contains a significant portion of Khmer characters."""
+    if not text:
+        return False
+    khmer_chars = sum(1 for c in text if "\u1780" <= c <= "\u17FF")
+    return khmer_chars / max(len(text.strip()), 1) > 0.15
+
+
+KHMER_INSTRUCTION = (
+    "Speak naturally and clearly in Khmer language (ភាសាខ្មែរ). "
+    "Use authentic Khmer pronunciation with a calm, natural pace."
+)
+
+
+def _with_khmer_hint(instruction: str, text: str) -> str:
+    """Append a Khmer language hint when text is Khmer and instruction lacks one."""
+    if not _is_khmer(text):
+        return instruction
+    hint = "Speak naturally in Khmer language (ភាសាខ្មែរ). Use authentic Khmer pronunciation."
+    if instruction:
+        if _is_khmer(instruction):
+            return instruction + " Speak in Khmer language (ភាសាខ្មែរ)."
+        return instruction + " Speak in Khmer language (ភាសាខ្មែរ)."
+    return hint
+
+
 async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -> None:
     short = text[:120] + ("…" if len(text) > 120 else "")
     processing = await context.bot.send_message(
@@ -336,7 +362,8 @@ async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -
         f"⏳ កំពុងបង្កើតសំឡេង…\n\n_{_esc(short)}_",
         parse_mode=ParseMode.MARKDOWN_V2,
     )
-    result = await generate_speech(text=text)
+    instruction = _with_khmer_hint("", text)
+    result = await generate_speech(text=text, instruction=instruction)
     await _safe_delete(context, chat_id, processing.message_id)
     await _send_audio_result(
         context, chat_id, result,
@@ -358,7 +385,7 @@ async def _do_voice_design(
         f"⏳ *កំពុងបង្កើតសំឡេង…*\n\n🎨 _{_esc(short_i)}_\n📝 _{_esc(short_t)}_",
         parse_mode=ParseMode.MARKDOWN_V2,
     )
-    result = await generate_speech(text=text, instruction=instruction)
+    result = await generate_speech(text=text, instruction=_with_khmer_hint(instruction, text))
     await _safe_delete(context, chat_id, processing.message_id)
     await _send_audio_result(context, chat_id, result, caption="🎨 *សំឡេងបានបង្កើត\\!*", keyboard=done_keyboard)
 
@@ -380,7 +407,7 @@ async def _do_vp_with_voice(
     )
     result = await generate_speech(
         text=text,
-        instruction=instruction,
+        instruction=_with_khmer_hint(instruction, text),
         reference_audio_bytes=ref_bytes,
         reference_audio_filename="preview.ogg",
     )
@@ -404,7 +431,7 @@ async def _do_voice_clone(
         f"⏳ *កំពុងក្លូនសំឡេង…*\n\n📝 _{_esc(short_t)}_\n\nកំពុង upload audio យោង…",
         parse_mode=ParseMode.MARKDOWN_V2,
     )
-    result = await generate_speech(text=text, reference_audio_bytes=ref_bytes, reference_audio_filename=ref_name)
+    result = await generate_speech(text=text, instruction=_with_khmer_hint("", text), reference_audio_bytes=ref_bytes, reference_audio_filename=ref_name)
     await _safe_delete(context, chat_id, processing.message_id)
     await _send_audio_result(context, chat_id, result, caption="🎙️ *ក្លូនសំឡេង*")
 
