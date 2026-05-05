@@ -110,12 +110,23 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     # ── ReplyKeyboard menu button routing ────────────────────────────────────
     if text == "⬅️":
-        _clear(context)
-        await msg.reply_text(
-            WELCOME_TEXT,
-            parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=main_menu_reply_keyboard(),
+        in_voice_preview = (
+            "vp_current_idx" in context.user_data
+            or _get_state(context) == STATE_VP_AWAITING_TEXT
         )
+        _clear(context)
+        if in_voice_preview:
+            await msg.reply_text(
+                "🔊 *ជ្រើសរើសសំឡេង:*",
+                parse_mode=ParseMode.MARKDOWN_V2,
+                reply_markup=voice_list_reply_keyboard(),
+            )
+        else:
+            await msg.reply_text(
+                WELCOME_TEXT,
+                parse_mode=ParseMode.MARKDOWN_V2,
+                reply_markup=main_menu_reply_keyboard(),
+            )
         return
 
     if text == "📝 អត្ថបទ → សំឡេង":
