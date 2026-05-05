@@ -381,7 +381,7 @@ async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -
     await _safe_delete(context, chat_id, processing.message_id)
     await _send_audio_result(
         context, chat_id, result,
-        caption=f"🔊 *VoxCPM2 TTS*\n_{_esc(text[:200])}_",
+        caption="🔊 *VoxCPM2 TTS*",
     )
 
 
@@ -401,8 +401,7 @@ async def _do_voice_design(
     )
     result = await generate_speech(text=text, instruction=instruction)
     await _safe_delete(context, chat_id, processing.message_id)
-    caption = f"🎨 *សំឡេងបានបង្កើត\\!*\n\n🎭 _{_esc(instruction[:100])}_\n📝 _{_esc(text[:100])}_"
-    await _send_audio_result(context, chat_id, result, caption=caption, keyboard=done_keyboard)
+    await _send_audio_result(context, chat_id, result, caption="🎨 *សំឡេងបានបង្កើត\\!*", keyboard=done_keyboard)
 
 
 async def _do_vp_with_voice(
@@ -427,9 +426,8 @@ async def _do_vp_with_voice(
         reference_audio_filename="preview.ogg",
     )
     await _safe_delete(context, chat_id, processing.message_id)
-    caption = f"🎭 *សំឡេងបានបង្កើត\\!*\n\n_{_esc(instruction[:100])}_\n📝 _{_esc(text[:100])}_"
     await _send_audio_result(
-        context, chat_id, result, caption=caption,
+        context, chat_id, result, caption="🎭 *សំឡេងបានបង្កើត\\!*",
         keyboard=use_voice_done_keyboard(voice_id=voice_id),
     )
 
@@ -449,8 +447,7 @@ async def _do_voice_clone(
     )
     result = await generate_speech(text=text, reference_audio_bytes=ref_bytes, reference_audio_filename=ref_name)
     await _safe_delete(context, chat_id, processing.message_id)
-    caption = f"🎙️ *ក្លូនសំឡេង*\n\n📝 _{_esc(text[:150])}_"
-    await _send_audio_result(context, chat_id, result, caption=caption)
+    await _send_audio_result(context, chat_id, result, caption="🎙️ *ក្លូនសំឡេង*")
 
 
 async def _do_voice_preview(
