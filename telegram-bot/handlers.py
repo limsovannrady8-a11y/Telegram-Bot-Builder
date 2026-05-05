@@ -481,10 +481,7 @@ async def _do_voice_preview(
 ) -> None:
     voice_id = voice["id"]
     total = len(PRESET_VOICES)
-    caption = (
-        f"{voice['emoji']} *{_esc(voice['name'])}* \\({idx + 1}/{total}\\)\n\n"
-        f"_{_esc(voice['instruction'][:120])}_"
-    )
+    caption = f"{voice['emoji']} *{_esc(voice['name'])}*"
 
     # ── 1. Check in-memory cache ──────────────────────────────────────────────
     audio_bytes: bytes | None = context.bot_data.get(f"vp_cache_{voice_id}")
