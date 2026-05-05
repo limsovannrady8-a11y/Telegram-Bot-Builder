@@ -16,9 +16,6 @@ def main_menu_keyboard() -> InlineKeyboardMarkup:
         ],
         [
             InlineKeyboardButton("🌍 ភាសា", callback_data="langs_0"),
-            InlineKeyboardButton("ℹ️ អំពី VoxCPM", callback_data="about"),
-        ],
-        [
             InlineKeyboardButton("❓ ជំនួយ", callback_data="help"),
         ],
     ])
