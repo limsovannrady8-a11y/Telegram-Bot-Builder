@@ -21,6 +21,17 @@ def main_menu_reply_keyboard() -> ReplyKeyboardMarkup:
     )
 
 
+def voice_list_reply_keyboard() -> ReplyKeyboardMarkup:
+    rows = []
+    for i in range(0, len(PRESET_VOICES), 2):
+        row = [f"{PRESET_VOICES[i]['emoji']} {PRESET_VOICES[i]['name']}"]
+        if i + 1 < len(PRESET_VOICES):
+            row.append(f"{PRESET_VOICES[i + 1]['emoji']} {PRESET_VOICES[i + 1]['name']}")
+        rows.append(row)
+    rows.append([BTN_CANCEL])
+    return ReplyKeyboardMarkup(rows, resize_keyboard=True, is_persistent=True)
+
+
 def cancel_reply_keyboard() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         [[BTN_CANCEL]],

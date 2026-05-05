@@ -8,6 +8,7 @@ from telegram.constants import ParseMode
 from keyboards import (
     main_menu_reply_keyboard,
     cancel_reply_keyboard,
+    voice_list_reply_keyboard,
     languages_keyboard,
     about_keyboard,
     after_voice_preview_keyboard,
@@ -263,7 +264,20 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         return
 
     if text == "🎭 មើលសំឡេង":
-        await _do_voice_preview(context, chat_id, PRESET_VOICES[0], idx=0)
+        await msg.reply_text(
+            "🎭 *ជ្រើសរើសសំឡេង:*",
+            parse_mode=ParseMode.MARKDOWN_V2,
+            reply_markup=voice_list_reply_keyboard(),
+        )
+        return
+
+    # ── Voice name buttons ────────────────────────────────────────────────────
+    _voice_match = next(
+        (v for v in PRESET_VOICES if text == f"{v['emoji']} {v['name']}"), None
+    )
+    if _voice_match:
+        idx = PRESET_VOICES.index(_voice_match)
+        await _do_voice_preview(context, chat_id, _voice_match, idx=idx)
         return
 
     # ── State-based message handling ─────────────────────────────────────────
