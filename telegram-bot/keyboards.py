@@ -1,5 +1,5 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from constants import SUPPORTED_LANGUAGES
+from constants import SUPPORTED_LANGUAGES, PRESET_VOICES, VOICES_PER_PAGE
 
 LANGS_PER_PAGE = 6
 
@@ -12,10 +12,13 @@ def main_menu_keyboard() -> InlineKeyboardMarkup:
         ],
         [
             InlineKeyboardButton("🎙️ Voice Clone", callback_data="vc"),
-            InlineKeyboardButton("🌍 Languages", callback_data="langs_0"),
+            InlineKeyboardButton("🎭 Voice Preview", callback_data="vp_0"),
         ],
         [
+            InlineKeyboardButton("🌍 Languages", callback_data="langs_0"),
             InlineKeyboardButton("ℹ️ About VoxCPM", callback_data="about"),
+        ],
+        [
             InlineKeyboardButton("❓ Help", callback_data="help"),
         ],
     ])
@@ -40,8 +43,55 @@ def after_generate_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
         [
             InlineKeyboardButton("🔄 Generate Another", callback_data="tts"),
-            InlineKeyboardButton("🏠 Main Menu", callback_data="menu"),
+            InlineKeyboardButton("🎭 Voice Preview", callback_data="vp_0"),
         ],
+        [InlineKeyboardButton("🏠 Main Menu", callback_data="menu")],
+    ])
+
+
+def voice_preview_list_keyboard(page: int = 0) -> InlineKeyboardMarkup:
+    start = page * VOICES_PER_PAGE
+    slice_ = PRESET_VOICES[start: start + VOICES_PER_PAGE]
+
+    rows = []
+    for v in slice_:
+        rows.append([
+            InlineKeyboardButton(
+                f"{v['emoji']} {v['name']}",
+                callback_data=f"vp_listen_{v['id']}",
+            )
+        ])
+
+    nav_row = []
+    if page > 0:
+        nav_row.append(InlineKeyboardButton("◀️ Prev", callback_data=f"vp_{page - 1}"))
+    if start + VOICES_PER_PAGE < len(PRESET_VOICES):
+        nav_row.append(InlineKeyboardButton("Next ▶️", callback_data=f"vp_{page + 1}"))
+    if nav_row:
+        rows.append(nav_row)
+
+    rows.append([InlineKeyboardButton("🏠 Main Menu", callback_data="menu")])
+    return InlineKeyboardMarkup(rows)
+
+
+def after_voice_preview_keyboard(voice_id: str, page: int = 0) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("✏️ Use This Voice", callback_data=f"vp_use_{voice_id}"),
+            InlineKeyboardButton("🔄 Preview Again", callback_data=f"vp_listen_{voice_id}"),
+        ],
+        [InlineKeyboardButton("◀️ Back to Voices", callback_data=f"vp_{page}")],
+        [InlineKeyboardButton("🏠 Main Menu", callback_data="menu")],
+    ])
+
+
+def use_voice_done_keyboard(page: int = 0) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("🔄 Generate Another", callback_data="tts"),
+            InlineKeyboardButton("🎭 More Voices", callback_data=f"vp_{page}"),
+        ],
+        [InlineKeyboardButton("🏠 Main Menu", callback_data="menu")],
     ])
 
 
