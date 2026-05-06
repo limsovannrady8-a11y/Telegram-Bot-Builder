@@ -384,6 +384,7 @@ async def _do_voice_design(
     processing = await context.bot.send_sticker(
         chat_id,
         sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
+        reply_markup=main_menu_reply_keyboard(),
     )
     result = await generate_speech(text=text, instruction=_with_khmer_hint(instruction, text))
     await _safe_delete(context, chat_id, processing.message_id)
@@ -401,6 +402,7 @@ async def _do_vp_with_voice(
     processing = await context.bot.send_sticker(
         chat_id,
         sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
+        reply_markup=main_menu_reply_keyboard(),
     )
     result = await generate_speech(
         text=text,
@@ -425,6 +427,7 @@ async def _do_voice_clone(
     processing = await context.bot.send_sticker(
         chat_id,
         sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
+        reply_markup=main_menu_reply_keyboard(),
     )
     result = await generate_speech(text=text, instruction=_with_khmer_hint("", text), reference_audio_bytes=ref_bytes, reference_audio_filename=ref_name)
     await _safe_delete(context, chat_id, processing.message_id)
@@ -474,6 +477,7 @@ async def _do_voice_preview(
     processing = await context.bot.send_sticker(
         chat_id,
         sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
+        reply_markup=main_menu_reply_keyboard(),
     )
     result = await generate_speech(text=voice["sample"], instruction=voice["instruction"])
     await _safe_delete(context, chat_id, processing.message_id)
