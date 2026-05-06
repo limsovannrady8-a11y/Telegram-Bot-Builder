@@ -1,59 +1,58 @@
-# Workspace
+# VoxCPM2 Telegram TTS Bot
 
-## Overview
+A Python Telegram bot that converts text to speech using VoxCPM2 AI (HuggingFace Spaces), with support for 30 languages, voice cloning, and voice design.
 
-Standalone Python Telegram bot integrated with VoxCPM2 TTS AI.
+## Run & Operate
+
+- **Run bot**: `cd telegram-bot && python bot.py` (handled by the "Telegram Bot (Python)" workflow)
+- **Required secrets**: `TELEGRAM_BOT_TOKEN`, `NEON_DATABASE_URL`
 
 ## Stack
 
-- **Python version**: 3.12
-- **Package manager**: pip / uv
-- **Telegram bot**: python-telegram-bot 21.6 (polling mode)
-- **Database**: PostgreSQL (Neon) via asyncpg — voice cache
+- Python 3.12
+- python-telegram-bot 21.6 (polling mode)
+- asyncpg — PostgreSQL async client for voice cache
+- httpx 0.27.2 — HTTP client for VoxCPM2 Gradio API calls
+- gradio-client 1.3.0 — Gradio API client
+- PostgreSQL (Neon) — voice cache database
 
-## Key Commands
+## Where things live
 
-- `cd telegram-bot && python bot.py` — run Telegram bot (handled by workflow)
+- `telegram-bot/` — all bot source code
+  - `bot.py` — entry point, registers handlers, starts polling
+  - `handlers.py` — all message and callback handler logic
+  - `keyboards.py` — ReplyKeyboardMarkup builder functions
+  - `constants.py` — states, supported languages, preset voices
+  - `voxcpm_api.py` — async Gradio API client for HuggingFace VoxCPM2 Space
+  - `db.py` — asyncpg voice cache (PostgreSQL/Neon)
+- `voxcpm-source/` — upstream VoxCPM2 model source (reference only, not used at runtime)
 
-## Telegram Bot (Python)
+## Architecture decisions
 
-A pure-Python Telegram bot with reply keyboard buttons integrated with VoxCPM2 TTS AI.
+- Bot runs in polling mode (not webhook) — simpler for long-running Replit deployments
+- Voice cache stored in Neon PostgreSQL as BYTEA to avoid re-generating common preset voices
+- VoxCPM2 is consumed as a hosted HuggingFace Gradio API (no local model inference)
+- Khmer language auto-detected via Unicode range U+1780–U+17FF (>15% threshold) and injected as a control instruction
+- All secrets stored in Replit Secrets (not env vars) for security
 
-### File structure (`telegram-bot/`)
+## Product
 
-| File | Purpose |
-|---|---|
-| `bot.py` | Entry point — builds `Application`, registers handlers, starts polling |
-| `handlers.py` | All `CallbackQueryHandler`, `MessageHandler` logic |
-| `keyboards.py` | `ReplyKeyboardMarkup` builder functions |
-| `constants.py` | Shared constants — states, supported languages, preset voices |
-| `voxcpm_api.py` | Async Gradio API client for HuggingFace Spaces |
-| `db.py` | asyncpg voice cache (PostgreSQL/Neon) |
-| `requirements.txt` | `python-telegram-bot==21.6`, `httpx==0.27.2` |
+- **Text → Speech**: any text in 30 languages converted to audio
+- **Voice Design**: describe a voice in natural language, then speak with it
+- **Voice Cloning**: send a reference audio clip → clone that voice → TTS
+- **Preset Voices**: 12+ named preset voices (paginated), pre-cached in DB for speed
 
-### Bot features
+## User preferences
 
-- **📝 អត្ថបទ → សំឡេង** — any text → speech audio (30 languages, Khmer auto-enhanced)
-- **🎨 រចនាសំឡេង** — describe a voice, then speak text with that custom voice
-- **🎙️ ក្លូនសំឡេង** — send reference audio → clone voice → speak any text
-- **🔊 ជ្រើសរើសសំឡេង** — paginated list of 12 preset voices with Khmer names
+- Bot is Khmer-language focused (UI labels in Khmer)
 
-### Conversation state machine
+## Gotchas
 
-Uses `context.user_data` to track per-user state:
-- `STATE_IDLE` → default
-- `STATE_TTS_AWAITING_TEXT` → waiting for text after TTS button
-- `STATE_VD_AWAITING_INSTRUCTION` → waiting for voice description
-- `STATE_VD_AWAITING_TEXT` → waiting for text after instruction saved
-- `STATE_VC_AWAITING_AUDIO` → waiting for reference audio file
-- `STATE_VC_AWAITING_TEXT` → waiting for text after audio received
-- `STATE_VP_AWAITING_TEXT` → waiting for text after preset voice selected
+- `NEON_DATABASE_URL` must be a secret (not a plain env var) — the bot uses it via `os.environ.get()`
+- The VoxCPM2 HuggingFace Space (`openbmb-voxcpm-demo.hf.space`) must be publicly accessible
+- Voice cache table is auto-created on first run via `init_db()`
 
-### Khmer language support
+## Pointers
 
-Automatically detects Khmer text (Unicode U+1780–U+17FF, >15% threshold) and injects a Khmer pronunciation instruction into VoxCPM2 for all TTS flows.
-
-### Environment secrets
-
-- `TELEGRAM_BOT_TOKEN` — required
-- `NEON_DATABASE_URL` — required (voice cache DB)
+- VoxCPM2 Gradio Space: https://huggingface.co/spaces/openbmb/VoxCPM-demo
+- python-telegram-bot docs: https://python-telegram-bot.org/
