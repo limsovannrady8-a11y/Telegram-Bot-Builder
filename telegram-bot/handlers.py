@@ -366,12 +366,12 @@ async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -
         reply_markup=main_menu_reply_keyboard(),
     )
     result = await generate_speech(text=text, instruction="")
-    await _safe_delete(context, chat_id, processing.message_id)
     await _send_audio_result(
         context, chat_id, result,
         caption=None,
         keyboard=main_menu_reply_keyboard(),
     )
+    await _safe_delete(context, chat_id, processing.message_id)
 
 
 async def _do_voice_design(
@@ -387,8 +387,8 @@ async def _do_voice_design(
         reply_markup=main_menu_reply_keyboard(),
     )
     result = await generate_speech(text=text, instruction=_with_khmer_hint(instruction, text))
-    await _safe_delete(context, chat_id, processing.message_id)
     await _send_audio_result(context, chat_id, result, caption="🎨 *សំឡេងបានបង្កើត\\!*", keyboard=main_menu_reply_keyboard())
+    await _safe_delete(context, chat_id, processing.message_id)
 
 
 async def _do_vp_with_voice(
@@ -410,11 +410,11 @@ async def _do_vp_with_voice(
         reference_audio_bytes=ref_bytes,
         reference_audio_filename="preview.ogg",
     )
-    await _safe_delete(context, chat_id, processing.message_id)
     await _send_audio_result(
         context, chat_id, result, caption="🎭 *សំឡេងបានបង្កើត\\!*",
         keyboard=main_menu_reply_keyboard(),
     )
+    await _safe_delete(context, chat_id, processing.message_id)
 
 
 async def _do_voice_clone(
@@ -430,8 +430,8 @@ async def _do_voice_clone(
         reply_markup=main_menu_reply_keyboard(),
     )
     result = await generate_speech(text=text, instruction=_with_khmer_hint("", text), reference_audio_bytes=ref_bytes, reference_audio_filename=ref_name)
-    await _safe_delete(context, chat_id, processing.message_id)
     await _send_audio_result(context, chat_id, result, caption="🎙️ *ក្លូនសំឡេង*", keyboard=main_menu_reply_keyboard())
+    await _safe_delete(context, chat_id, processing.message_id)
 
 
 async def _do_voice_preview(
@@ -480,7 +480,6 @@ async def _do_voice_preview(
         reply_markup=main_menu_reply_keyboard(),
     )
     result = await generate_speech(text=voice["sample"], instruction=voice["instruction"])
-    await _safe_delete(context, chat_id, processing.message_id)
 
     if result.get("error") or not result.get("audio_url"):
         err_detail = _esc(str(result.get("error", "Unknown"))[:160])
@@ -490,6 +489,7 @@ async def _do_voice_preview(
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=kb,
         )
+        await _safe_delete(context, chat_id, processing.message_id)
         return
 
     try:
@@ -510,8 +510,10 @@ async def _do_voice_preview(
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=kb,
         )
+        await _safe_delete(context, chat_id, processing.message_id)
     except Exception as exc:
         logger.error("Failed to send preview voice: %s", exc)
+        await _safe_delete(context, chat_id, processing.message_id)
         await context.bot.send_message(
             chat_id,
             "❌ មិនអាចផ្ញើ voice message បាន\\. សូមព្យាយាមម្ដងទៀត\\.",
