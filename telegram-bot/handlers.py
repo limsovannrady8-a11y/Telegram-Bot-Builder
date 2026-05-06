@@ -369,12 +369,7 @@ async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -
     await _send_audio_result(
         context, chat_id, result,
         caption=None,
-        keyboard=None,
-    )
-    await context.bot.send_sticker(
-        chat_id,
-        sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
-        reply_markup=main_menu_reply_keyboard(),
+        keyboard=main_menu_reply_keyboard(),
     )
 
 
