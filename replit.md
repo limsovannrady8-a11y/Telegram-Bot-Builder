@@ -25,7 +25,6 @@ A Python Telegram bot that converts text to speech using VoxCPM2 AI (HuggingFace
   - `constants.py` — states, supported languages, preset voices
   - `voxcpm_api.py` — async Gradio API client for HuggingFace VoxCPM2 Space
   - `db.py` — asyncpg voice cache (PostgreSQL/Neon)
-- `voxcpm-source/` — upstream VoxCPM2 model source (reference only, not used at runtime)
 
 ## Architecture decisions
 

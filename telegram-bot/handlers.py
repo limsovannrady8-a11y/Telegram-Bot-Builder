@@ -1,3 +1,4 @@
+import asyncio
 import io
 import logging
 import os
@@ -6,7 +7,7 @@ import tempfile
 import httpx
 from telegram import Update, InputFile
 from telegram.ext import ContextTypes
-from telegram.constants import ParseMode
+from telegram.constants import ChatAction, ParseMode
 
 from keyboards import (
     main_menu_reply_keyboard,
@@ -113,7 +114,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     # ── ReplyKeyboard menu button routing ────────────────────────────────────
     if text == "⬅️":
-        import asyncio
         in_voice_preview = (
             "vp_current_idx" in context.user_data
             or _get_state(context) == STATE_VP_AWAITING_TEXT
@@ -359,13 +359,27 @@ def _with_khmer_hint(instruction: str, text: str) -> str:
     return hint
 
 
+async def _action_loop(bot, chat_id: int, stop: asyncio.Event) -> None:
+    """Repeatedly send RECORD_VOICE action every 4 s until stop is set."""
+    while not stop.is_set():
+        try:
+            await bot.send_chat_action(chat_id, ChatAction.RECORD_VOICE)
+        except Exception:
+            pass
+        await asyncio.sleep(4)
+
+
 async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -> None:
     processing = await context.bot.send_sticker(
         chat_id,
         sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
         reply_markup=main_menu_reply_keyboard(),
     )
+    stop = asyncio.Event()
+    loop = asyncio.create_task(_action_loop(context.bot, chat_id, stop))
     result = await generate_speech(text=text, instruction="")
+    stop.set()
+    await loop
     await _send_audio_result(
         context, chat_id, result,
         caption=None,
@@ -386,7 +400,11 @@ async def _do_voice_design(
         sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
         reply_markup=main_menu_reply_keyboard(),
     )
+    stop = asyncio.Event()
+    loop = asyncio.create_task(_action_loop(context.bot, chat_id, stop))
     result = await generate_speech(text=text, instruction=_with_khmer_hint(instruction, text))
+    stop.set()
+    await loop
     await _send_audio_result(context, chat_id, result, caption="🎨 *សំឡេងបានបង្កើត\\!*", keyboard=main_menu_reply_keyboard())
     await _safe_delete(context, chat_id, processing.message_id)
 
@@ -404,12 +422,16 @@ async def _do_vp_with_voice(
         sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
         reply_markup=main_menu_reply_keyboard(),
     )
+    stop = asyncio.Event()
+    loop = asyncio.create_task(_action_loop(context.bot, chat_id, stop))
     result = await generate_speech(
         text=text,
         instruction=_with_khmer_hint(instruction, text),
         reference_audio_bytes=ref_bytes,
         reference_audio_filename="preview.ogg",
     )
+    stop.set()
+    await loop
     await _send_audio_result(
         context, chat_id, result, caption="🎭 *សំឡេងបានបង្កើត\\!*",
         keyboard=main_menu_reply_keyboard(),
@@ -429,7 +451,11 @@ async def _do_voice_clone(
         sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
         reply_markup=main_menu_reply_keyboard(),
     )
+    stop = asyncio.Event()
+    loop = asyncio.create_task(_action_loop(context.bot, chat_id, stop))
     result = await generate_speech(text=text, instruction=_with_khmer_hint("", text), reference_audio_bytes=ref_bytes, reference_audio_filename=ref_name)
+    stop.set()
+    await loop
     await _send_audio_result(context, chat_id, result, caption="🎙️ *ក្លូនសំឡេង*", keyboard=main_menu_reply_keyboard())
     await _safe_delete(context, chat_id, processing.message_id)
 
@@ -479,7 +505,11 @@ async def _do_voice_preview(
         sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
         reply_markup=main_menu_reply_keyboard(),
     )
+    stop = asyncio.Event()
+    loop = asyncio.create_task(_action_loop(context.bot, chat_id, stop))
     result = await generate_speech(text=voice["sample"], instruction=voice["instruction"])
+    stop.set()
+    await loop
 
     if result.get("error") or not result.get("audio_url"):
         err_detail = _esc(str(result.get("error", "Unknown"))[:160])
