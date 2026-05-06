@@ -1,5 +1,8 @@
 import io
 import logging
+import os
+import subprocess
+import tempfile
 import httpx
 from telegram import Update, InputFile
 from telegram.ext import ContextTypes
@@ -472,7 +475,8 @@ async def _do_voice_preview(
     # ── 3. Serve immediately if cached ────────────────────────────────────────
     if audio_bytes:
         try:
-            voice_file = InputFile(io.BytesIO(audio_bytes), filename="preview.ogg")
+            ogg_bytes = _to_ogg_opus(audio_bytes)
+            voice_file = InputFile(io.BytesIO(ogg_bytes), filename="preview.ogg")
             await context.bot.send_voice(
                 chat_id,
                 voice=voice_file,
@@ -512,7 +516,8 @@ async def _do_voice_preview(
         context.bot_data[f"vp_cache_{voice_id}"] = audio_bytes
         await voice_db.save_cached_voice(voice_id, audio_bytes)
 
-        voice_file = InputFile(io.BytesIO(audio_bytes), filename="preview.ogg")
+        ogg_bytes = _to_ogg_opus(audio_bytes)
+        voice_file = InputFile(io.BytesIO(ogg_bytes), filename="preview.ogg")
         await context.bot.send_voice(
             chat_id,
             voice=voice_file,
@@ -560,6 +565,34 @@ async def precache_all_voices() -> None:
     logger.info("Voice pre-caching complete: %d/%d cached", cached, len(PRESET_VOICES))
 
 
+def _to_ogg_opus(audio_bytes: bytes) -> bytes:
+    """Convert any audio bytes to OGG Opus for Telegram voice messages."""
+    tmp_in = tempfile.NamedTemporaryFile(suffix=".audio", delete=False)
+    tmp_out_path = tmp_in.name + ".ogg"
+    try:
+        tmp_in.write(audio_bytes)
+        tmp_in.close()
+        subprocess.run(
+            [
+                "ffmpeg", "-y", "-loglevel", "error",
+                "-i", tmp_in.name,
+                "-c:a", "libopus", "-b:a", "64k",
+                tmp_out_path,
+            ],
+            check=True,
+            timeout=30,
+        )
+        with open(tmp_out_path, "rb") as f:
+            return f.read()
+    except Exception as exc:
+        logger.warning("OGG conversion failed, using raw bytes: %s", exc)
+        return audio_bytes
+    finally:
+        os.unlink(tmp_in.name)
+        if os.path.exists(tmp_out_path):
+            os.unlink(tmp_out_path)
+
+
 async def _send_audio_result(
     context: ContextTypes.DEFAULT_TYPE,
     chat_id: int,
@@ -589,7 +622,8 @@ async def _send_audio_result(
             dl.raise_for_status()
             audio_bytes = dl.content
 
-        voice_file = InputFile(io.BytesIO(audio_bytes), filename="speech.ogg")
+        ogg_bytes = _to_ogg_opus(audio_bytes)
+        voice_file = InputFile(io.BytesIO(ogg_bytes), filename="speech.ogg")
         await context.bot.send_voice(
             chat_id,
             voice=voice_file,
