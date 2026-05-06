@@ -23,7 +23,6 @@ from constants import (
     STATE_VC_AWAITING_AUDIO,
     STATE_VC_AWAITING_TEXT,
     STATE_VP_AWAITING_TEXT,
-    STATE_RV_AWAITING_TEXT,
 )
 from voxcpm_api import generate_speech
 import db as voice_db
@@ -185,19 +184,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         )
         return
 
-    if text == "🎲 Random Voice":
-        _clear(context)
-        _set_state(context, STATE_RV_AWAITING_TEXT)
-        await msg.reply_text(
-            (
-                "*អត្ថបទ → សំឡេង \\(Random Voice\\)*\n\n"
-                "👉 _ផ្ញើអត្ថបទណាមួយ ហើយខ្ញុំនឹងបំប្លែងជាសំឡេង:_"
-            ),
-            parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=cancel_reply_keyboard(),
-        )
-        return
-
     # ── Voice name buttons ────────────────────────────────────────────────────
     _voice_match = next(
         (v for v in PRESET_VOICES if text == f"{v['emoji']} {v['name']}"), None
@@ -281,14 +267,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         ref_bytes = context.user_data.get("vp_ref_bytes")
         _clear(context)
         await _do_vp_with_voice(context, chat_id, msg.text, instruction, ref_bytes, voice_id)
-        return
-
-    if state == STATE_RV_AWAITING_TEXT:
-        if not msg.text:
-            await msg.reply_text("⚠️ សូមផ្ញើអត្ថបទ\\.", parse_mode=ParseMode.MARKDOWN_V2, reply_markup=cancel_reply_keyboard())
-            return
-        _clear(context)
-        await _do_random_voice_tts(context, chat_id, msg.text)
         return
 
     if state == STATE_VC_AWAITING_AUDIO:
@@ -389,25 +367,6 @@ async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -
     await _send_audio_result(
         context, chat_id, result,
         caption=None,
-        keyboard=main_menu_reply_keyboard(),
-    )
-
-
-async def _do_random_voice_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -> None:
-    import random as _random
-    voice = _random.choice(PRESET_VOICES)
-    short = text[:120] + ("…" if len(text) > 120 else "")
-    processing = await context.bot.send_message(
-        chat_id,
-        f"⏳ កំពុងបង្កើតសំឡេង…\n\n🎲 _{_esc(voice['name'])}_\n📝 _{_esc(short)}_",
-        parse_mode=ParseMode.MARKDOWN_V2,
-    )
-    instruction = _with_khmer_hint(voice["instruction"], text)
-    result = await generate_speech(text=text, instruction=instruction)
-    await _safe_delete(context, chat_id, processing.message_id)
-    await _send_audio_result(
-        context, chat_id, result,
-        caption=f"🎲 *{_esc(voice['name'])}*",
         keyboard=main_menu_reply_keyboard(),
     )
 
