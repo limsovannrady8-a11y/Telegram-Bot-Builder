@@ -113,19 +113,34 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     # ── ReplyKeyboard menu button routing ────────────────────────────────────
     if text == "⬅️":
+        import asyncio
         in_voice_preview = (
             "vp_current_idx" in context.user_data
             or _get_state(context) == STATE_VP_AWAITING_TEXT
         )
         _clear(context)
+
+        # Delete the user's ⬅️ message
+        await _safe_delete(context, chat_id, msg.message_id)
+
+        # Show sticker briefly, then delete it
+        sticker_msg = await context.bot.send_sticker(
+            chat_id,
+            sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
+        )
+        await asyncio.sleep(1.5)
+        await _safe_delete(context, chat_id, sticker_msg.message_id)
+
         if in_voice_preview:
-            await msg.reply_text(
+            await context.bot.send_message(
+                chat_id,
                 "*សូមជ្រើសរើសប្រភេទសំឡេង:*",
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=voice_list_reply_keyboard(),
             )
         else:
-            await msg.reply_text(
+            await context.bot.send_message(
+                chat_id,
                 WELCOME_TEXT,
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=main_menu_reply_keyboard(),
