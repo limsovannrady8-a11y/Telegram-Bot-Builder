@@ -123,13 +123,11 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         # Delete the user's ⬅️ message
         await _safe_delete(context, chat_id, msg.message_id)
 
-        # Show sticker briefly, then delete it
-        sticker_msg = await context.bot.send_sticker(
+        # Show sticker
+        await context.bot.send_sticker(
             chat_id,
             sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
         )
-        await asyncio.sleep(1.5)
-        await _safe_delete(context, chat_id, sticker_msg.message_id)
 
         if in_voice_preview:
             await context.bot.send_message(
