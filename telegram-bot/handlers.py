@@ -137,8 +137,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         _set_state(context, STATE_TTS_AWAITING_TEXT)
         await msg.reply_text(
             (
-                "*អត្ថបទ → សំឡេង*\n\n"
-                "👉 _ផ្ញើអត្ថបទណាមួយ ហើយខ្ញុំនឹងបំប្លែងជាសំឡេង:_"
+                "*អត្ថបទ → សំឡេង \\(Random Voice\\)*\n\n"
+                "👉 ផ្ញើអត្ថបទណាមួយ ហើយខ្ញុំនឹងបំប្លែងជាសំឡេង:"
             ),
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=cancel_reply_keyboard(),
