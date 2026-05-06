@@ -367,6 +367,7 @@ async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -
     await _send_audio_result(
         context, chat_id, result,
         caption=None,
+        keyboard=main_menu_reply_keyboard(),
     )
 
 
@@ -386,7 +387,7 @@ async def _do_voice_design(
     )
     result = await generate_speech(text=text, instruction=_with_khmer_hint(instruction, text))
     await _safe_delete(context, chat_id, processing.message_id)
-    await _send_audio_result(context, chat_id, result, caption="🎨 *សំឡេងបានបង្កើត\\!*", keyboard=done_keyboard)
+    await _send_audio_result(context, chat_id, result, caption="🎨 *សំឡេងបានបង្កើត\\!*", keyboard=main_menu_reply_keyboard())
 
 
 async def _do_vp_with_voice(
@@ -432,7 +433,7 @@ async def _do_voice_clone(
     )
     result = await generate_speech(text=text, instruction=_with_khmer_hint("", text), reference_audio_bytes=ref_bytes, reference_audio_filename=ref_name)
     await _safe_delete(context, chat_id, processing.message_id)
-    await _send_audio_result(context, chat_id, result, caption="🎙️ *ក្លូនសំឡេង*")
+    await _send_audio_result(context, chat_id, result, caption="🎙️ *ក្លូនសំឡេង*", keyboard=main_menu_reply_keyboard())
 
 
 async def _do_voice_preview(
