@@ -120,9 +120,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         )
         _clear(context)
 
-        # Delete the user's ⬅️ message
-        await _safe_delete(context, chat_id, msg.message_id)
-
         # Show sticker
         await context.bot.send_sticker(
             chat_id,
