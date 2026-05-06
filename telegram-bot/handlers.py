@@ -362,8 +362,7 @@ async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -
         f"⏳ កំពុងបង្កើតសំឡេង…\n\n_{_esc(short)}_",
         parse_mode=ParseMode.MARKDOWN_V2,
     )
-    instruction = _with_khmer_hint("", text)
-    result = await generate_speech(text=text, instruction=instruction)
+    result = await generate_speech(text=text, instruction="")
     await _safe_delete(context, chat_id, processing.message_id)
     await _send_audio_result(
         context, chat_id, result,
