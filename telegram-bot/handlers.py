@@ -120,12 +120,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         )
         _clear(context)
 
-        # Show sticker
-        await context.bot.send_sticker(
-            chat_id,
-            sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
-        )
-
         if in_voice_preview:
             await context.bot.send_message(
                 chat_id,
