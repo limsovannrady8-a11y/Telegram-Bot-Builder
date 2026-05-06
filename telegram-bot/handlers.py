@@ -356,11 +356,9 @@ def _with_khmer_hint(instruction: str, text: str) -> str:
 
 
 async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -> None:
-    short = text[:120] + ("…" if len(text) > 120 else "")
-    processing = await context.bot.send_message(
+    processing = await context.bot.send_sticker(
         chat_id,
-        f"⏳ កំពុងបង្កើតសំឡេង…\n\n_{_esc(short)}_",
-        parse_mode=ParseMode.MARKDOWN_V2,
+        sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
     )
     result = await generate_speech(text=text, instruction="")
     await _safe_delete(context, chat_id, processing.message_id)
@@ -378,12 +376,9 @@ async def _do_voice_design(
     instruction: str,
     done_keyboard=None,
 ) -> None:
-    short_i = instruction[:80] + ("…" if len(instruction) > 80 else "")
-    short_t = text[:80] + ("…" if len(text) > 80 else "")
-    processing = await context.bot.send_message(
+    processing = await context.bot.send_sticker(
         chat_id,
-        f"⏳ *កំពុងបង្កើតសំឡេង…*\n\n🎨 _{_esc(short_i)}_\n📝 _{_esc(short_t)}_",
-        parse_mode=ParseMode.MARKDOWN_V2,
+        sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
     )
     result = await generate_speech(text=text, instruction=_with_khmer_hint(instruction, text))
     await _safe_delete(context, chat_id, processing.message_id)
@@ -398,12 +393,9 @@ async def _do_vp_with_voice(
     ref_bytes: bytes | None,
     voice_id: str = "",
 ) -> None:
-    short_i = instruction[:60] + ("…" if len(instruction) > 60 else "")
-    short_t = text[:80] + ("…" if len(text) > 80 else "")
-    processing = await context.bot.send_message(
+    processing = await context.bot.send_sticker(
         chat_id,
-        f"⏳ *កំពុងបង្កើតសំឡេង…*\n\n🎭 _{_esc(short_i)}_\n📝 _{_esc(short_t)}_",
-        parse_mode=ParseMode.MARKDOWN_V2,
+        sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
     )
     result = await generate_speech(
         text=text,
@@ -425,11 +417,9 @@ async def _do_voice_clone(
     ref_bytes: bytes,
     ref_name: str = "ref.ogg",
 ) -> None:
-    short_t = text[:80] + ("…" if len(text) > 80 else "")
-    processing = await context.bot.send_message(
+    processing = await context.bot.send_sticker(
         chat_id,
-        f"⏳ *កំពុងក្លូនសំឡេង…*\n\n📝 _{_esc(short_t)}_\n\nកំពុង upload audio យោង…",
-        parse_mode=ParseMode.MARKDOWN_V2,
+        sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
     )
     result = await generate_speech(text=text, instruction=_with_khmer_hint("", text), reference_audio_bytes=ref_bytes, reference_audio_filename=ref_name)
     await _safe_delete(context, chat_id, processing.message_id)
@@ -476,10 +466,9 @@ async def _do_voice_preview(
         return
 
     # ── 4. Fallback: generate via API ─────────────────────────────────────────
-    processing = await context.bot.send_message(
+    processing = await context.bot.send_sticker(
         chat_id,
-        f"⏳ កំពុងបង្កើតគំរូ *{_esc(voice['name'])}*…",
-        parse_mode=ParseMode.MARKDOWN_V2,
+        sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
     )
     result = await generate_speech(text=voice["sample"], instruction=voice["instruction"])
     await _safe_delete(context, chat_id, processing.message_id)
