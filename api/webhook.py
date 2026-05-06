@@ -4,8 +4,12 @@ import logging
 import os
 import sys
 from http.server import BaseHTTPRequestHandler
+from pathlib import Path
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "telegram-bot"))
+# Resolve telegram-bot path relative to this file, regardless of cwd
+BOT_DIR = str(Path(__file__).resolve().parent.parent / "telegram-bot")
+if BOT_DIR not in sys.path:
+    sys.path.insert(0, BOT_DIR)
 
 from telegram import Update
 from telegram.ext import Application, CallbackQueryHandler, MessageHandler, filters
@@ -62,4 +66,4 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(b"Bot webhook is active.")
+        self.wfile.write(b"Webhook active.")
