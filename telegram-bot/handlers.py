@@ -363,6 +363,7 @@ async def _do_tts(context: ContextTypes.DEFAULT_TYPE, chat_id: int, text: str) -
     processing = await context.bot.send_sticker(
         chat_id,
         sticker="CAACAgUAAxkBAAEDu4Zp-rTrlmnphDX-WIT9au-O6aW5CwACLRYAAvgG8VSjN2gKlvlMQTsE",
+        reply_markup=cancel_reply_keyboard(),
     )
     result = await generate_speech(text=text, instruction="")
     await _safe_delete(context, chat_id, processing.message_id)
