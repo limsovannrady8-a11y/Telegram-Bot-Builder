@@ -314,7 +314,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             )
             _set_state(context, STATE_VC_AWAITING_TEXT)
             await msg.reply_text(
-                f"✅ Audio យោងទទួលបានហើយ \\({len(audio_bytes) // 1024} KB\\)\\!\n\nឥឡូវផ្ញើ *អត្ថបទ* ដែលចង់និយាយ:",
+                f"✅ បានទទួលសំឡេងរបស់អ្នកហើយ\n\n👉 _ឥឡូវផ្ញើអត្ថបទដែលចង់និយាយ:_",
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=cancel_reply_keyboard(),
             )
