@@ -5,10 +5,8 @@ import json
 import logging
 import os
 import sys
-from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 
-# Resolve telegram-bot path relative to this file, regardless of cwd
 BOT_DIR = str(Path(__file__).resolve().parent.parent / "telegram-bot")
 if BOT_DIR not in sys.path:
     sys.path.insert(0, BOT_DIR)
@@ -26,9 +24,9 @@ TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 
 
 def _build_app() -> Application:
-    app = Application.builder().token(TOKEN).build()
-    app.add_handler(CallbackQueryHandler(on_callback))
-    app.add_handler(
+    ptb = Application.builder().token(TOKEN).build()
+    ptb.add_handler(CallbackQueryHandler(on_callback))
+    ptb.add_handler(
         MessageHandler(
             filters.TEXT
             | filters.VOICE
@@ -38,34 +36,32 @@ def _build_app() -> Application:
             on_message,
         )
     )
-    return app
+    return ptb
 
 
 async def _process_update(data: dict) -> None:
-    app = _build_app()
-    async with app:
+    ptb = _build_app()
+    async with ptb:
         await init_db()
-        update = Update.de_json(data, app.bot)
-        await app.process_update(update)
+        update = Update.de_json(data, ptb.bot)
+        await ptb.process_update(update)
 
 
-class handler(BaseHTTPRequestHandler):
-    def log_message(self, format, *args):
-        logger.info(format, *args)
+def app(environ, start_response):
+    method = environ.get("REQUEST_METHOD", "GET")
 
-    def do_POST(self):
-        length = int(self.headers.get("Content-Length", 0))
-        body = self.rfile.read(length)
+    if method == "GET":
+        start_response("200 OK", [("Content-Type", "text/plain")])
+        return [b"Webhook active."]
+
+    if method == "POST":
         try:
+            length = int(environ.get("CONTENT_LENGTH", 0) or 0)
+            body = environ["wsgi.input"].read(length)
             data = json.loads(body)
             asyncio.run(_process_update(data))
         except Exception as exc:
             logger.error("Webhook error: %s", exc)
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"OK")
 
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Webhook active.")
+    start_response("200 OK", [("Content-Type", "text/plain")])
+    return [b"OK"]

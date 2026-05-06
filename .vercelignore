@@ -2,4 +2,4 @@ pyproject.toml
 uv.lock
 .replit
 replit.nix
-requirements.txt
+/requirements.txt
