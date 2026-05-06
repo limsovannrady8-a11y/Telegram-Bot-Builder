@@ -120,7 +120,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         _clear(context)
         if in_voice_preview:
             await msg.reply_text(
-                "សូមជ្រើសរើសសំឡេង",
+                "សូមជ្រើសរើសប្រភេទសំឡេង:",
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=voice_list_reply_keyboard(),
             )
