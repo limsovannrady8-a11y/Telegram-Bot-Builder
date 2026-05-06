@@ -194,19 +194,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         return
 
     # ── Voice preview navigation / action buttons ─────────────────────────────
-    if text == "◀️":
-        idx = context.user_data.get("vp_current_idx", 0)
-        if idx > 0:
-            new_idx = idx - 1
-            await _do_voice_preview(context, chat_id, PRESET_VOICES[new_idx], idx=new_idx)
-        return
-
-    if text == "▶️":
-        idx = context.user_data.get("vp_current_idx", 0)
-        if idx < len(PRESET_VOICES) - 1:
-            new_idx = idx + 1
-            await _do_voice_preview(context, chat_id, PRESET_VOICES[new_idx], idx=new_idx)
-        return
 
     if text == "✏️ ប្រើសំឡេងនេះ":
         idx = context.user_data.get("vp_current_idx", 0)
