@@ -4,7 +4,9 @@ A Python Telegram bot that converts text to speech using VoxCPM2 AI (HuggingFace
 
 ## Run & Operate
 
-- **Run bot**: `cd telegram-bot && python bot.py` (handled by the "Telegram Bot (Python)" workflow)
+- **Run bot (polling / dev)**: `cd telegram-bot && python bot.py` (handled by the "Telegram Bot (Python)" workflow)
+- **Deploy (Vercel webhook)**: push to Vercel — webhook lives at `/api/webhook`
+- **Register webhook**: `https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://<VERCEL_DOMAIN>/api/webhook`
 - **Required secrets**: `TELEGRAM_BOT_TOKEN`, `NEON_DATABASE_URL`
 
 ## Stack
