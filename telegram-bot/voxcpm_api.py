@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 VoxCPM2 Gradio API client (Gradio 5.x SSE endpoints).
 
