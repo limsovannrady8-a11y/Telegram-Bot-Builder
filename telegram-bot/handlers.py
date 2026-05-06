@@ -168,9 +168,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         _set_state(context, STATE_VC_AWAITING_AUDIO)
         await msg.reply_text(
             (
-                "🎙️ *ម៉ូដ ក្លូនសំឡេង*\n\n"
-                "ផ្ញើ *voice message* ឬ *audio file* ជាឯកសារយោង \\(3–30 វិនាទីល្អបំផុត\\)\\.\n\n"
-                "👉 _ផ្ញើសំឡេងដែលអ្នកចងក្លូន:_"
+                "ផ្ញើ *voice message* ឬ *audio file* ជាឯកសារយោង \\(3–30 វិនាទីល្អបំផុត\\)\n\n"
+                "👉 _ផ្ញើសំឡេងដែលអ្នកចង់ក្លូន_"
             ),
             parse_mode=ParseMode.MARKDOWN_V2,
             reply_markup=cancel_reply_keyboard(),
